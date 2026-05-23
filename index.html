@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sešity — interaktivní školní materiály</title>
+  <meta name="description" content="Krátké interaktivní výklady z matematiky, fyziky a dalších témat. Vzorec, nákres, zkus si.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+
+  <style>
+    /* Landing-only styles — generic patterns live in /assets/style.css.
+       Anything reused on a second page should graduate to that stylesheet. */
+    .landing {
+      max-width: var(--page-max);
+      margin: 0 auto;
+      padding: var(--space-10) var(--space-5) var(--space-9);
+    }
+    .landing-eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin: 0 0 var(--space-6) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .landing-eyebrow .dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background: var(--marker);
+      border-radius: 50%;
+    }
+    .landing h1 {
+      font-size: var(--fs-display);
+      max-width: 14ch;
+      margin: 0 0 var(--space-6) 0;
+    }
+    .landing .lead {
+      font-size: var(--fs-lg);
+      max-width: 52ch;
+      color: var(--ink-soft);
+      line-height: 1.4;
+      margin: 0 0 var(--space-8) 0;
+    }
+    .landing .lead .hl { color: var(--ink); }
+
+    .landing-section-tag {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin: var(--space-9) 0 var(--space-4) 0;
+      display: flex; align-items: center; gap: var(--space-3);
+    }
+    .landing-section-tag::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 2px;
+      background: var(--ink);
+    }
+
+    /* Subject card extras (count + arrow) on top of .subject-card from style.css */
+    .subject-card .subject-arrow {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--fs-2xl);
+      color: var(--marker);
+      align-self: flex-end;
+      margin-top: var(--space-4);
+      transition: transform 160ms ease;
+      font-variation-settings: 'SOFT' 60, 'opsz' 96;
+    }
+    .subject-card:hover .subject-arrow { transform: translateX(6px); }
+    .subject-card p {
+      color: var(--ink-soft);
+      margin: 0 0 var(--space-4) 0;
+    }
+
+    /* Footer */
+    .landing-footer {
+      max-width: var(--page-max);
+      margin: 0 auto;
+      padding: var(--space-7) var(--space-5) var(--space-8);
+      border-top: 1px solid var(--ink-faint);
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      color: var(--ink-faint);
+      letter-spacing: 0.05em;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+    .landing-footer span { text-transform: uppercase; }
+
+    /* Editorial corner mark — small decorative SVG block in the top right */
+    .corner-mark {
+      position: fixed;
+      top: var(--space-5);
+      right: var(--space-5);
+      width: 64px; height: 64px;
+      pointer-events: none;
+      opacity: 0.85;
+      z-index: 50;
+    }
+    @media (max-width: 720px) {
+      .corner-mark { width: 44px; height: 44px; top: var(--space-3); right: var(--space-3); }
+      .landing { padding-top: var(--space-7); }
+    }
+  </style>
+</head>
+<body class="has-grain">
+
+  <!-- Decorative corner: risograph-style misregistered cross -->
+  <svg class="corner-mark" viewBox="0 0 64 64" aria-hidden="true">
+    <g>
+      <rect x="14" y="6" width="6" height="52" fill="var(--marker)"/>
+      <rect x="6" y="14" width="52" height="6" fill="var(--marker)"/>
+    </g>
+    <g style="mix-blend-mode: multiply;">
+      <rect x="17" y="9" width="6" height="52" fill="var(--ink)"/>
+      <rect x="9" y="17" width="52" height="6" fill="var(--ink)"/>
+    </g>
+  </svg>
+
+  <main class="landing">
+
+    <p class="landing-eyebrow">
+      <span class="dot"></span>
+      Sešity · interaktivní výuka
+    </p>
+
+    <h1>Učivo, co stojí za&nbsp;otevření.</h1>
+
+    <p class="lead">
+      Krátké interaktivní výklady z&nbsp;matematiky, fyziky a&nbsp;dalších témat.
+      <span class="hl">Vzorec</span>, <span class="hl">nákres</span>, zkus si.
+      Žádné mlžení, žádné dlouhé úvody — jen to, co se chceš naučit, a&nbsp;možnost si s&nbsp;tím pohrát.
+    </p>
+
+    <p class="landing-section-tag">Předměty</p>
+
+    <div class="subjects">
+
+      <a class="subject-card" href="./topics/math/">
+        <h3>Matematika</h3>
+        <p>Vzorce, důkazy, grafy a&nbsp;geometrie. Lekce s&nbsp;posuvníky a&nbsp;živými konstrukcemi.</p>
+        <span class="subject-count">Brzy · 0 lekcí</span>
+        <span class="subject-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="subject-card" href="./topics/physics/">
+        <h3>Fyzika</h3>
+        <p>Od optiky po mechaniku. Simulace, které ukazují, co se za&nbsp;vzorcem skutečně děje.</p>
+        <span class="subject-count">Brzy · 0 lekcí</span>
+        <span class="subject-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="subject-card" href="./topics/general/">
+        <h3>Obecné</h3>
+        <p>Kvízy, mezioborové výklady, věci, které se nikam nehodí, ale stojí za&nbsp;to.</p>
+        <span class="subject-count">Brzy · 0 lekcí</span>
+        <span class="subject-arrow" aria-hidden="true">→</span>
+      </a>
+
+    </div>
+
+  </main>
+
+  <footer class="landing-footer">
+    <span>Sešity · v0.1</span>
+    <span>Otevřený experiment</span>
+  </footer>
+
+</body>
+</html>

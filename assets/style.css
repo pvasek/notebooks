@@ -1,0 +1,677 @@
+/* ============================================================
+   Školní materiály — site stylesheet
+   Implements the design system from /DESIGN_SYSTEM.md
+   ============================================================ */
+
+/* ---------- 1. Tokens -------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --paper:        #F6F1E1;
+  --paper-dim:    #ECE5D2;
+  --paper-grid:   rgba(19, 26, 42, 0.055);
+
+  /* Ink */
+  --ink:          #131A2A;
+  --ink-soft:     #3D4B66;
+  --ink-faint:    #8997AE;
+
+  /* Accents */
+  --highlight:     #D6F500;
+  --highlight-ink: #131A2A;
+  --marker:        #E85D3D;
+  --chalk:         #F8FBFF;
+
+  /* Diagram supports */
+  --construction: #B6BFD0;
+  --diagram-ray:  #131A2A;
+  --diagram-aux:  #E85D3D;
+
+  /* Fonts */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body:    'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Type scale (base 16px) */
+  --fs-3xs: 0.6875rem;
+  --fs-2xs: 0.75rem;
+  --fs-xs:  0.875rem;
+  --fs-sm:  1rem;
+  --fs-md:  1.125rem;
+  --fs-lg:  1.375rem;
+  --fs-xl:  1.75rem;
+  --fs-2xl: 2.5rem;
+  --fs-3xl: 4rem;
+  --fs-display: clamp(3rem, 8vw, 6.5rem);
+
+  /* Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /* Layout */
+  --measure:   68ch;
+  --page-max:  1240px;
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 16px;
+}
+
+/* ---------- 2. Base / reset -------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(circle, var(--paper-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Optional grain overlay — applied to .has-grain bodies (landing/index)
+   so dense lesson pages stay clean. */
+body.has-grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 100;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+img, svg, video, canvas { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--ink); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+a:hover { color: var(--marker); }
+
+/* ---------- 3. Typography ---------------------------------- */
+
+p { margin: 0 0 var(--space-4) 0; max-width: var(--measure); }
+p:last-child { margin-bottom: 0; }
+
+h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--fs-3xl);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  font-variation-settings: 'SOFT' 50, 'opsz' 144;
+  text-wrap: balance;
+  margin: 0 0 var(--space-5) 0;
+  color: var(--ink);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-2xl);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'SOFT' 30, 'opsz' 96;
+  margin: 0 0 var(--space-4) 0;
+  text-wrap: balance;
+}
+
+h3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-3) 0;
+}
+
+h4 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+  margin: 0 0 var(--space-3) 0;
+}
+
+code, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+::selection {
+  background: var(--highlight);
+  color: var(--highlight-ink);
+}
+
+/* Highlighter underline — for key terms in prose. */
+.hl {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    var(--highlight) 55%,
+    var(--highlight) 92%,
+    transparent 92%
+  );
+  padding: 0 0.15em;
+  color: var(--highlight-ink);
+  font-weight: 500;
+}
+
+/* ---------- 4. Page shell / layout ------------------------- */
+
+.lesson {
+  display: grid;
+  grid-template-columns:
+    [margin-left] minmax(0, 1fr)
+    [main-start] minmax(0, 68ch)
+    [main-end] minmax(0, 0.5fr) [margin-right];
+  column-gap: var(--space-6);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+.lesson > * { grid-column: main-start / main-end; }
+.lesson > .full-bleed { grid-column: margin-left / margin-right; }
+.lesson > .margin-note {
+  grid-column: margin-left;
+  align-self: start;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+@media (max-width: 720px) {
+  .lesson {
+    grid-template-columns: 1fr;
+    padding: var(--space-6) var(--space-4);
+  }
+  .lesson > .margin-note { grid-column: 1; }
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, var(--paper-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--paper-grid) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* ---------- 5. Lesson header ------------------------------- */
+
+.lesson-header { margin-bottom: var(--space-9); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-5) 0;
+}
+.eyebrow .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--marker);
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: var(--space-2);
+}
+
+.lesson-header h1 { margin: 0 0 var(--space-5) 0; }
+
+.lead {
+  font-size: var(--fs-lg);
+  line-height: 1.4;
+  color: var(--ink-soft);
+  max-width: 50ch;
+  text-wrap: balance;
+  margin: 0;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin: var(--space-6) 0 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+.meta > div { display: flex; flex-direction: column; gap: var(--space-1); }
+.meta dt {
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--fs-3xs);
+}
+.meta dd { margin: 0; color: var(--ink); font-weight: 500; }
+
+/* ---------- 6. Section block with big number ------------- */
+
+.block { margin: var(--space-9) 0; }
+
+.block-h {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-5);
+  align-items: baseline;
+  margin-bottom: var(--space-5);
+}
+
+.block-n {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-3xl);
+  line-height: 0.9;
+  color: var(--marker);
+  font-variation-settings: 'SOFT' 80, 'opsz' 144;
+}
+
+/* ---------- 7. Formula block ------------------------------ */
+
+.formula {
+  margin: var(--space-6) 0;
+  padding: var(--space-5) var(--space-6);
+  background: var(--paper-dim);
+  border-left: 3px solid var(--ink);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.formula-eq {
+  font-size: var(--fs-lg);
+  text-align: center;
+  padding: var(--space-3) 0;
+  color: var(--ink);
+}
+.formula-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.formula-legend code {
+  font-family: var(--font-mono);
+  background: none;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* KaTeX overrides — keep math in ink color, slightly tighter line height */
+.katex { color: var(--ink); }
+.katex-display { margin: var(--space-4) 0; }
+
+/* ---------- 8. Callouts ----------------------------------- */
+
+.callout {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius);
+  background: var(--paper-dim);
+}
+.callout-tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--space-2) 0;
+}
+.callout p:not(.callout-tag) { margin: 0; max-width: none; }
+
+.callout--warn      { border-left: 4px solid var(--marker); }
+.callout--warn .callout-tag { color: var(--marker); }
+
+.callout--tip       { border-left: 4px solid var(--ink); }
+.callout--tip .callout-tag  { color: var(--ink); }
+
+.callout--remember {
+  border-left: 4px solid var(--highlight);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--highlight) 15%, var(--paper-dim)),
+    var(--paper-dim) 30%
+  );
+}
+.callout--remember .callout-tag { color: var(--ink); }
+
+/* ---------- 9. Example card ------------------------------- */
+
+.example {
+  margin: var(--space-6) 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--ink-faint);
+  padding: var(--space-5) 0;
+}
+.example-n {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--fs-xl);
+  margin: 0 0 var(--space-3) 0;
+  font-variation-settings: 'SOFT' 60, 'opsz' 96;
+  color: var(--ink);
+}
+.example-q {
+  font-size: var(--fs-md);
+  margin: 0 0 var(--space-4) 0;
+  max-width: none;
+}
+.example-a summary {
+  cursor: pointer;
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--paper);
+  list-style: none;
+  transition: background 120ms ease;
+}
+.example-a summary::-webkit-details-marker { display: none; }
+.example-a summary:hover { background: var(--highlight); }
+.example-a[open] summary {
+  background: var(--ink);
+  color: var(--paper);
+}
+.example-body { margin-top: var(--space-5); }
+
+/* ---------- 10. Interactive widget frame ------------------ */
+
+.widget {
+  position: relative;
+  margin: var(--space-7) 0;
+  padding: var(--space-6);
+  background: var(--paper-dim);
+  border-radius: var(--radius-lg);
+  /* Eight thin ticks at the four corners (specimen-card vibe) */
+  background-image:
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink));
+  background-position:
+    0 0, 0 0,
+    100% 0, 100% 0,
+    0 100%, 0 100%,
+    100% 100%, 100% 100%;
+  background-size:
+    14px 2px, 2px 14px,
+    14px 2px, 2px 14px,
+    14px 2px, 2px 14px,
+    14px 2px, 2px 14px;
+  background-repeat: no-repeat;
+}
+.widget-tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-4) 0;
+}
+.widget-stage {
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  min-height: 240px;
+}
+.widget-hint {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  margin-top: var(--space-3);
+}
+
+/* Open-interactive button (used inside static-fallback widgets) */
+.open-interactive {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 80ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+.open-interactive:hover {
+  background: var(--marker);
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.open-interactive:active {
+  transform: translate(0, 0);
+  box-shadow: none;
+}
+
+/* ---------- 11. Quiz -------------------------------------- */
+
+.quiz {
+  margin: var(--space-6) 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--ink-faint);
+}
+.quiz-q {
+  font-weight: 500;
+  font-size: var(--fs-md);
+  margin: 0 0 var(--space-4) 0;
+  max-width: none;
+}
+.quiz-n {
+  display: inline-block;
+  width: 1.8em;
+  height: 1.8em;
+  line-height: 1.8em;
+  text-align: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  border-radius: 50%;
+  margin-right: var(--space-2);
+}
+.quiz-options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.quiz-options button {
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 100ms ease, transform 80ms ease;
+}
+.quiz-options button:hover {
+  background: var(--highlight);
+  transform: translateX(2px);
+}
+.quiz-options button.correct {
+  background: var(--highlight);
+  border-color: var(--ink);
+}
+.quiz-options button.wrong {
+  background: color-mix(in srgb, var(--marker) 25%, var(--paper));
+  border-color: var(--marker);
+}
+
+/* ---------- 12. "Co si odnést" closing -------------------- */
+
+.takeaway {
+  margin-top: var(--space-9);
+  padding: var(--space-6);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius-lg);
+}
+.takeaway-tag {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-xl);
+  color: var(--highlight);
+  margin: 0 0 var(--space-4) 0;
+  font-variation-settings: 'SOFT' 80, 'opsz' 96;
+}
+.takeaway ol {
+  padding-left: var(--space-5);
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+  max-width: 60ch;
+}
+.takeaway li { color: var(--paper); }
+.takeaway li::marker {
+  color: var(--highlight);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* ---------- 13. Landing / subject cards ------------------- */
+
+.subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-5);
+  margin: var(--space-7) 0;
+}
+.subject-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6);
+  background: var(--paper-dim);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.subject-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+  color: var(--ink);
+}
+.subject-card h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-2xl);
+  margin: 0 0 var(--space-3) 0;
+  font-variation-settings: 'SOFT' 80, 'opsz' 144;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.subject-card .subject-count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-top: auto;
+  padding-top: var(--space-5);
+}
+
+/* ---------- 14. SVG diagram conventions ------------------- */
+
+.diagram, svg.diagram, .static-diagram {
+  --stroke: var(--ink);
+  --stroke-aux: var(--diagram-aux);
+  --stroke-construction: var(--construction);
+  color: var(--ink);
+}
+.diagram text, svg.diagram text, .static-diagram text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--ink);
+}
+.diagram .ray-primary   { stroke: var(--ink); stroke-width: 2; fill: none; }
+.diagram .ray-secondary { stroke: var(--diagram-aux); stroke-width: 1.75; fill: none; }
+.diagram .construction  { stroke: var(--construction); stroke-width: 1; stroke-dasharray: 4 4; fill: none; }
+.diagram .axis          { stroke: var(--ink-faint); stroke-width: 1; }
+.diagram .active        { stroke: var(--marker); stroke-width: 2.5; }
+
+/* ---------- 15. Motion ------------------------------------ */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lesson-header > * {
+  animation: rise 480ms cubic-bezier(.2, .7, .2, 1) both;
+}
+.lesson-header .eyebrow { animation-delay: 0ms;   }
+.lesson-header h1       { animation-delay: 80ms;  }
+.lesson-header .lead    { animation-delay: 200ms; }
+.lesson-header .meta    { animation-delay: 320ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- 16. Accessibility / focus --------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--marker);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+button, [role="button"], summary, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- 17. Utility helpers (use sparingly) ----------- */
+
+.muted     { color: var(--ink-soft); }
+.faint     { color: var(--ink-faint); }
+.mono      { font-family: var(--font-mono); }
+.display   { font-family: var(--font-display); }
+.center    { text-align: center; }
+.full-bleed { /* placeholder selector — see .lesson grid */ }
