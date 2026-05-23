@@ -112,7 +112,7 @@ h1 {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
-  font-size: var(--fs-3xl);
+  font-size: clamp(2.25rem, 5vw + 1rem, 4rem);
   line-height: 0.95;
   letter-spacing: -0.025em;
   font-variation-settings: 'SOFT' 50, 'opsz' 144;
@@ -124,7 +124,7 @@ h1 {
 h2 {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: var(--fs-2xl);
+  font-size: clamp(1.625rem, 3vw + 0.8rem, 2.5rem);
   line-height: 1.05;
   letter-spacing: -0.02em;
   font-variation-settings: 'SOFT' 30, 'opsz' 96;
@@ -135,7 +135,7 @@ h2 {
 h3 {
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: var(--fs-xl);
+  font-size: clamp(1.2rem, 1.2vw + 0.95rem, 1.75rem);
   line-height: 1.2;
   letter-spacing: -0.01em;
   margin: 0 0 var(--space-3) 0;
@@ -200,9 +200,26 @@ code, kbd, samp {
 @media (max-width: 720px) {
   .lesson {
     grid-template-columns: 1fr;
-    padding: var(--space-6) var(--space-4);
+    padding: var(--space-5) var(--space-4);
   }
+  .lesson > * { grid-column: 1; }
   .lesson > .margin-note { grid-column: 1; }
+
+  /* Tighter section rhythm on small screens — 96px between blocks reads as huge there. */
+  .lesson-header { margin-bottom: var(--space-6); }
+  .block { margin: var(--space-6) 0; }
+  .block-h { margin-bottom: var(--space-4); gap: var(--space-3); }
+  .takeaway {
+    margin-top: var(--space-7);
+    padding: var(--space-5);
+  }
+
+  /* Slightly tighter widget/figure spacing too */
+  .widget { margin: var(--space-5) 0; padding: var(--space-4); }
+  .widget-stage { padding: var(--space-3); }
+  .example { margin: var(--space-5) 0; }
+  .callout { margin: var(--space-5) 0; }
+  .formula { margin: var(--space-5) 0; padding: var(--space-4); }
 }
 
 .grid-bg {
