@@ -85,6 +85,13 @@
     }
     .spektrum-band strong { color: var(--ink); }
     .spektrum input[type=range] { width: 100%; }
+    .spektrum-wave {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: var(--paper-dim);
+      border-radius: var(--radius-sm);
+    }
 
     /* Snell widget */
     .snell {
@@ -357,8 +364,8 @@
       <p>
         Když světlo přechází z&nbsp;jednoho prostředí do&nbsp;druhého, mění
         rychlost — a&nbsp;jelikož vlnu nelze „zlomit přesně v&nbsp;kolmém směru",
-        změní zároveň svůj směr. To je <strong>lom světla</strong>. Přesně ho
-        popisuje Snellův zákon:
+        změní zároveň svůj směr. To je <span class="hl">lom světla</span>. Přesně ho
+        popisuje <span class="hl">Snellův zákon</span>:
       </p>
 
       <figure class="formula">
@@ -400,7 +407,7 @@
         Snellova zákona by vyšel sinus větší než&nbsp;jedna — což matematicky
         nejde. V&nbsp;tom okamžiku se světlo úplně odrazí zpět do&nbsp;hustšího
         prostředí. Říká se tomu <span class="hl">úplný odraz</span> a&nbsp;úhel,
-        při kterém začíná, je <strong>mezní úhel</strong>:
+        při kterém začíná, je <span class="hl">mezní úhel</span>:
       </p>
 
       <figure class="formula">
@@ -488,8 +495,9 @@
 
       <p>
         Když se světlo nedostane do&nbsp;druhého prostředí (typicky narazí
-        na&nbsp;lesklý povrch), <strong>odrazí se</strong>. A&nbsp;odraz má
-        pravidlo ještě jednodušší než&nbsp;lom:
+        na&nbsp;lesklý povrch), <strong>odrazí se</strong>. Pro odraz platí
+        <span class="hl">zákon odrazu</span> — pravidlo ještě jednodušší
+        než&nbsp;lom:
       </p>
 
       <figure class="formula">
@@ -518,12 +526,22 @@
         <div class="widget-stage">
           <div class="mirror-case">
             <h4>Geometrie zdánlivého obrazu</h4>
-            <svg viewBox="0 0 600 280" class="diagram" role="img" aria-label="Konstrukce zdánlivého obrazu v rovinném zrcadle">
+            <!--
+              Geometry: object tip (140, 80), object base (140, 200), mirror at x=300,
+              image tip (460, 80), image base (460, 200), eye (200, 250).
+              Mirror reflection points computed so that the law of reflection holds
+              (angle of incidence = angle of reflection from horizontal normal),
+              equivalently: each reflected ray, extended backward through the mirror,
+              passes through the image point.
+                tip-ray  reflection at (300, 175.4)
+                base-ray reflection at (300, 219.2)
+            -->
+            <svg viewBox="0 0 600 290" class="diagram" role="img" aria-label="Konstrukce zdánlivého obrazu v rovinném zrcadle pomocí dvou paprsků a zákona odrazu">
               <defs>
                 <marker id="arr-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                   <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink, #131A2A)"/>
                 </marker>
-                <marker id="arr-r-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker id="arr-r-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                   <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux, #E85D3D)"/>
                 </marker>
                 <pattern id="hatch" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
@@ -531,42 +549,54 @@
                 </pattern>
               </defs>
 
-              <!-- mirror -->
-              <line x1="300" y1="20" x2="300" y2="260" stroke="var(--ink, #131A2A)" stroke-width="3"/>
-              <rect x="300" y="20" width="10" height="240" fill="url(#hatch)"/>
+              <!-- mirror surface (vertical line + hatching on its back) -->
+              <line x1="300" y1="20" x2="300" y2="265" stroke="var(--ink, #131A2A)" stroke-width="3"/>
+              <rect x="300" y="20" width="10" height="245" fill="url(#hatch)"/>
               <text x="305" y="14" font-size="11" fill="var(--ink-soft, #3D4B66)">zrcadlo</text>
 
+              <!-- normals (horizontal) at the two reflection points, dotted -->
+              <line x1="260" y1="175.4" x2="340" y2="175.4" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8" stroke-dasharray="2 3"/>
+              <line x1="260" y1="219.2" x2="340" y2="219.2" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8" stroke-dasharray="2 3"/>
+
+              <!-- back-projection extensions to image (dashed construction) -->
+              <line x1="300" y1="175.4" x2="460" y2="80"  stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
+              <line x1="300" y1="219.2" x2="460" y2="200" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
+
+              <!-- ray 1 (from object tip): incident + reflected -->
+              <line x1="140" y1="80"    x2="300" y2="175.4" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" marker-end="url(#arr-r-aux)"/>
+              <line x1="300" y1="175.4" x2="200" y2="250"   stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" marker-end="url(#arr-r-aux)"/>
+
+              <!-- ray 2 (from object base): incident + reflected -->
+              <line x1="140" y1="200"   x2="300" y2="219.2" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" opacity="0.85" marker-end="url(#arr-r-aux)"/>
+              <line x1="300" y1="219.2" x2="200" y2="250"   stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" opacity="0.85" marker-end="url(#arr-r-aux)"/>
+
               <!-- object arrow (left) -->
-              <line x1="140" y1="190" x2="140" y2="100" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-r)"/>
-              <text x="100" y="210" font-size="11" fill="var(--ink, #131A2A)" font-weight="600">předmět</text>
+              <line x1="140" y1="200" x2="140" y2="80" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-r)"/>
+              <text x="100" y="220" font-size="11" fill="var(--ink, #131A2A)" font-weight="600">předmět</text>
 
               <!-- image arrow (right, dashed lighter) -->
-              <line x1="460" y1="190" x2="460" y2="100" stroke="var(--ink-soft, #3D4B66)" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-r)"/>
-              <text x="420" y="210" font-size="11" fill="var(--ink-soft, #3D4B66)">obraz (zdánlivý)</text>
-
-              <!-- rays from arrow tip to eye -->
-              <!-- ray 1: from object tip to mirror, reflected to eye -->
-              <line x1="140" y1="100" x2="280" y2="160" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" marker-end="url(#arr-r-aux)"/>
-              <line x1="280" y1="160" x2="200" y2="240" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" marker-end="url(#arr-r-aux)"/>
-              <!-- ray 1 extension behind mirror -->
-              <line x1="280" y1="160" x2="460" y2="100" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
+              <line x1="460" y1="200" x2="460" y2="80" stroke="var(--ink-soft, #3D4B66)" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-r)"/>
+              <text x="418" y="220" font-size="11" fill="var(--ink-soft, #3D4B66)">obraz (zdánlivý)</text>
 
               <!-- eye -->
-              <circle cx="195" cy="245" r="9" fill="var(--paper, #F6F1E1)" stroke="var(--ink, #131A2A)" stroke-width="1.5"/>
-              <circle cx="195" cy="245" r="3" fill="var(--ink, #131A2A)"/>
-              <text x="210" y="252" font-size="11" fill="var(--ink-soft, #3D4B66)">oko</text>
+              <circle cx="200" cy="250" r="9" fill="var(--paper, #F6F1E1)" stroke="var(--ink, #131A2A)" stroke-width="1.5"/>
+              <circle cx="200" cy="250" r="3" fill="var(--ink, #131A2A)"/>
+              <text x="215" y="256" font-size="11" fill="var(--ink-soft, #3D4B66)">oko</text>
 
-              <!-- distance markers -->
-              <line x1="140" y1="245" x2="296" y2="245" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
-              <line x1="304" y1="245" x2="460" y2="245" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
-              <line x1="140" y1="240" x2="140" y2="250" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
-              <line x1="460" y1="240" x2="460" y2="250" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
-              <text x="210" y="270" font-size="11" fill="var(--ink-soft, #3D4B66)" font-style="italic">a</text>
-              <text x="378" y="270" font-size="11" fill="var(--ink-soft, #3D4B66)" font-style="italic">a' (=&nbsp;a)</text>
+              <!-- distance markers under -->
+              <line x1="140" y1="275" x2="296" y2="275" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <line x1="304" y1="275" x2="460" y2="275" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <line x1="140" y1="270" x2="140" y2="280" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <line x1="460" y1="270" x2="460" y2="280" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <text x="215" y="288" font-size="11" fill="var(--ink-soft, #3D4B66)" font-style="italic">a</text>
+              <text x="378" y="288" font-size="11" fill="var(--ink-soft, #3D4B66)" font-style="italic">a' (= a)</text>
             </svg>
             <p class="case-result">
               <strong>Obraz</strong> je zdánlivý, stejně velký, přímý, stranově převrácený.
-              Leží stejně daleko za&nbsp;zrcadlem (a&#39;) jako předmět před&nbsp;ním (a).
+              Leží stejně daleko za&nbsp;zrcadlem (a') jako předmět před&nbsp;ním (a).
+              Dva oranžové paprsky vychází z&nbsp;hrotu a&nbsp;paty předmětu,
+              odráží se podle zákona odrazu a&nbsp;přicházejí do&nbsp;oka — jejich
+              zpětná prodloužení (šedě tečkovaně) ukazují, odkud obraz „vidí".
             </p>
           </div>
         </div>
@@ -685,50 +715,11 @@
         <div class="widget-stage">
           <div class="mirror-case">
             <h4>Předmět za&nbsp;středem křivosti C</h4>
-            <svg viewBox="0 0 600 280" class="diagram" role="img" aria-label="Duté zrcadlo, předmět za středem křivosti">
-              <defs>
-                <marker id="arr-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink, #131A2A)"/>
-                </marker>
-                <marker id="arr-d-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux, #E85D3D)"/>
-                </marker>
-              </defs>
-
-              <!-- optical axis -->
-              <line x1="20" y1="140" x2="580" y2="140" stroke="var(--ink-faint, #8997AE)" stroke-width="1"/>
-
-              <!-- concave mirror arc (opens to the left) -->
-              <path d="M 520 50 Q 470 140, 520 230" fill="none" stroke="var(--ink, #131A2A)" stroke-width="3"/>
-
-              <!-- F and C markers -->
-              <circle cx="430" cy="140" r="4" fill="var(--ink, #131A2A)"/>
-              <text x="426" y="160" font-size="11" fill="var(--ink, #131A2A)" font-weight="700">F</text>
-              <circle cx="340" cy="140" r="4" fill="var(--ink, #131A2A)"/>
-              <text x="336" y="160" font-size="11" fill="var(--ink, #131A2A)" font-weight="700">C</text>
-
-              <!-- object arrow (left of C) -->
-              <line x1="180" y1="140" x2="180" y2="80" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-d)"/>
-              <text x="155" y="170" font-size="11" fill="var(--ink, #131A2A)">předmět</text>
-
-              <!-- ray 1: parallel → through F -->
-              <line x1="180" y1="80" x2="473" y2="80" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
-              <line x1="473" y1="80" x2="378" y2="172" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5" marker-end="url(#arr-d-aux)"/>
-
-              <!-- ray 2: through F → parallel -->
-              <line x1="180" y1="80" x2="473" y2="171" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
-              <line x1="473" y1="171" x2="220" y2="171" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5" marker-end="url(#arr-d-aux)"/>
-
-              <!-- ray 3: through C → back through C -->
-              <line x1="180" y1="80" x2="478" y2="183" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1" opacity="0.5"/>
-              <line x1="478" y1="183" x2="180" y2="80" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1" opacity="0.5"/>
-
-              <!-- image (small, inverted, between C and F) -->
-              <line x1="378" y1="140" x2="378" y2="172" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-d)"/>
-              <text x="384" y="190" font-size="11" fill="var(--ink, #131A2A)">obraz</text>
-            </svg>
+            <div id="concave-stage"></div>
             <p class="case-result">
-              <strong>Skutečný, převrácený, zmenšený.</strong> Leží mezi C a&nbsp;F.
+              <strong>Skutečný, převrácený, zmenšený.</strong> Leží mezi&nbsp;C a&nbsp;F.
+              Oranžové paprsky a&nbsp;poloha obrazu jsou spočítané ze&nbsp;zobrazovací rovnice
+              a&nbsp;tří význačných paprsků — geometrie vyjde sama.
             </p>
           </div>
         </div>
@@ -783,50 +774,11 @@
         <div class="widget-stage">
           <div class="mirror-case">
             <h4>Předmět před vypuklým zrcadlem</h4>
-            <svg viewBox="0 0 600 280" class="diagram" role="img" aria-label="Vypuklé zrcadlo, vznik zdánlivého obrazu za zrcadlem">
-              <defs>
-                <marker id="arr-v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink, #131A2A)"/>
-                </marker>
-                <marker id="arr-v-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux, #E85D3D)"/>
-                </marker>
-              </defs>
-
-              <!-- optical axis -->
-              <line x1="20" y1="140" x2="580" y2="140" stroke="var(--ink-faint, #8997AE)" stroke-width="1"/>
-
-              <!-- convex mirror arc (opens to the right) -->
-              <path d="M 320 50 Q 370 140, 320 230" fill="none" stroke="var(--ink, #131A2A)" stroke-width="3"/>
-
-              <!-- F and C behind mirror (dashed) -->
-              <circle cx="420" cy="140" r="4" fill="none" stroke="var(--ink-soft, #3D4B66)" stroke-width="1.5" stroke-dasharray="2 2"/>
-              <text x="416" y="160" font-size="11" fill="var(--ink-soft, #3D4B66)" font-weight="700">F</text>
-              <circle cx="510" cy="140" r="4" fill="none" stroke="var(--ink-soft, #3D4B66)" stroke-width="1.5" stroke-dasharray="2 2"/>
-              <text x="506" y="160" font-size="11" fill="var(--ink-soft, #3D4B66)" font-weight="700">C</text>
-
-              <!-- object arrow -->
-              <line x1="140" y1="140" x2="140" y2="70" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-v)"/>
-              <text x="115" y="170" font-size="11" fill="var(--ink, #131A2A)">předmět</text>
-
-              <!-- ray 1: parallel → reflects as if from F (diverging upward) -->
-              <line x1="140" y1="70" x2="328" y2="70" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
-              <line x1="328" y1="70" x2="180" y2="195" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5" marker-end="url(#arr-v-aux)"/>
-              <!-- construction: ray 1 extension to F -->
-              <line x1="328" y1="70" x2="420" y2="140" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
-
-              <!-- ray 2: toward C → reflects back -->
-              <line x1="140" y1="70" x2="343" y2="115" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
-              <line x1="343" y1="115" x2="140" y2="70" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1" opacity="0.4"/>
-              <!-- construction continued to C -->
-              <line x1="343" y1="115" x2="510" y2="140" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
-
-              <!-- virtual image: small arrow behind mirror, dashed -->
-              <line x1="403" y1="140" x2="403" y2="120" stroke="var(--ink-soft, #3D4B66)" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-v)"/>
-              <text x="380" y="170" font-size="11" fill="var(--ink-soft, #3D4B66)">obraz (zdánlivý)</text>
-            </svg>
+            <div id="convex-stage"></div>
             <p class="case-result">
               <strong>Vždy zdánlivý, přímý, zmenšený</strong> — bez ohledu na&nbsp;polohu předmětu.
+              F a&nbsp;C leží <em>za</em>&nbsp;zrcadlem (vykreslené přerušovaně), odražené paprsky
+              se rozbíhají a&nbsp;jejich zpětná prodloužení (šedě) se sbíhají v&nbsp;zdánlivém obrazu.
             </p>
           </div>
         </div>
@@ -937,6 +889,8 @@
   <script type="module">
     import { html, render, useState, useMemo } from '../../../lib/preact.js';
 
+    const NBSP = ' ';
+
     // ====== SPEKTRUM WIDGET ====================================
 
     function wavelengthToRGB(wl) {
@@ -971,13 +925,35 @@
       return 'Infračervené (IR)';
     }
 
+    // Sine wave path generator. Wavelength in nm is mapped to SVG pixels
+    // via a fixed multiplier so the wave compresses at short λ (UV side)
+    // and stretches at long λ (IR side). y is inverted (SVG convention).
+    function sinePath(wlNm, viewW, midY, amp) {
+      const pxLambda = wlNm * 0.35; // 300nm → 105px, 800nm → 280px
+      let d = `M 0 ${midY}`;
+      for (let x = 2; x <= viewW; x += 2) {
+        const y = midY - amp * Math.sin((2 * Math.PI * x) / pxLambda);
+        d += ` L ${x} ${y.toFixed(2)}`;
+      }
+      return { d, pxLambda };
+    }
+
     function Spektrum() {
       const [wl, setWl] = useState(550);
 
       const isVisible = wl >= 400 && wl <= 700;
       const color = isVisible ? wavelengthToRGB(wl) : '#7a7a7a';
-      const freqTHz = (300_000 / wl).toFixed(0); // c = 3e8 m/s; f[THz] = c/λ = 3e8/(λ·1e-9)/1e12 = 3e5/λ
+      const freqTHz = (300_000 / wl).toFixed(0);
       const markerPos = ((wl - 300) / (800 - 300)) * 100;
+
+      // Wave geometry
+      const SVG_W = 600, SVG_H = 110, midY = 70, amp = 22;
+      const { d: wavePath, pxLambda } = sinePath(wl, SVG_W, midY, amp);
+      // λ-bracket between two visible peaks (peak at sin = +1 → x = pxLambda/4)
+      const peak1x = pxLambda / 4;
+      const peak2x = 5 * pxLambda / 4;
+      const peakY  = midY - amp;
+      const bracketY = 24;
 
       return html`
         <div class="spektrum">
@@ -994,17 +970,32 @@
           <dl class="spektrum-readout">
             <div>
               <dt>Vlnová délka</dt>
-              <dd>${wl}&nbsp;nm</dd>
+              <dd>${wl}${NBSP}nm</dd>
             </div>
             <div>
               <dt>Frekvence</dt>
-              <dd>${freqTHz}&nbsp;THz</dd>
+              <dd>${freqTHz}${NBSP}THz</dd>
             </div>
             <div>
               <dt>Barva</dt>
               <dd><span class="swatch" style=${{ background: color }}></span></dd>
             </div>
           </dl>
+
+          <svg class="spektrum-wave" viewBox="0 0 ${SVG_W} ${SVG_H}" role="img" aria-label="Sinusoida znázorňující vlnovou délku">
+            <!-- midline -->
+            <line x1="0" y1=${midY} x2=${SVG_W} y2=${midY} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="2 4" opacity="0.55"/>
+            <!-- sine wave, colored to current wavelength -->
+            <path d=${wavePath} stroke=${color} stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- λ bracket between first two peaks -->
+            <line x1=${peak1x} y1=${bracketY} x2=${peak1x} y2=${peakY} stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>
+            <line x1=${peak2x} y1=${bracketY} x2=${peak2x} y2=${peakY} stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>
+            <line x1=${peak1x} y1=${bracketY} x2=${peak2x} y2=${bracketY} stroke="var(--ink)" stroke-width="1.5"/>
+            <line x1=${peak1x} y1=${bracketY - 5} x2=${peak1x} y2=${bracketY + 5} stroke="var(--ink)" stroke-width="1.5"/>
+            <line x1=${peak2x} y1=${bracketY - 5} x2=${peak2x} y2=${bracketY + 5} stroke="var(--ink)" stroke-width="1.5"/>
+            <text x=${(peak1x + peak2x) / 2} y=${bracketY - 9} text-anchor="middle" font-size="16" font-style="italic" fill="var(--ink)" font-family="Fraunces, Georgia, serif">λ</text>
+          </svg>
+
           <p class="spektrum-band">
             ${isVisible
               ? html`<strong>${bandName(wl)}</strong> · uvnitř viditelného spektra`
@@ -1129,7 +1120,7 @@
                 : html`<div>α₂ = <strong>${a2deg.toFixed(1)}°</strong></div>`
               }
               ${critical !== null && html`
-                <div>Mezní úhel pro ${topMat}&nbsp;→&nbsp;${bottomMat}: <strong>${critical.toFixed(1)}°</strong></div>
+                <div>Mezní úhel pro ${topMat}${NBSP}→${NBSP}${bottomMat}: <strong>${critical.toFixed(1)}°</strong></div>
               `}
             </div>
           </div>
@@ -1213,6 +1204,144 @@
     }
 
     render(html`<${Quiz} />`, document.getElementById('quiz'));
+
+    // ====== MIRROR DIAGRAM (computed from physics) =============
+    // Thin spherical mirror. Sign convention:
+    //   f > 0 for concave (spojné), f < 0 for convex (rozptylné)
+    //   a > 0 object distance (always before mirror)
+    //   a' > 0 image before mirror (real), a' < 0 behind mirror (virtual)
+    //   1/a + 1/a' = 1/f
+    //   h_img = -h_obj · a'/a   (negative = inverted, |Z|>1 = magnified)
+    //
+    // World coordinates: mirror vertex at world (0,0), optical axis at world y=0.
+    // Object on the LEFT at world x = -a. SVG y is flipped (down is positive).
+
+    function MirrorDiagram({ type, a, fAbs, hObj }) {
+      const f = type === 'convex' ? -fAbs : fAbs;
+      const aPrime = 1 / (1 / f - 1 / a);
+      const hImg = -hObj * aPrime / a;
+      const isReal = aPrime > 0;
+
+      // SVG layout
+      const W = 600, H = 280;
+      const xV = 420;           // mirror vertex in SVG
+      const yV = H / 2;         // optical axis in SVG
+      const scale = 5.5;        // px per world unit
+
+      const W2S = (wx, wy) => ({ x: xV + wx * scale, y: yV - wy * scale });
+
+      const objBase = W2S(-a, 0);
+      const objTip  = W2S(-a, hObj);
+      const imgBase = W2S(-aPrime, 0);
+      const imgTip  = W2S(-aPrime, hImg);
+      const F  = W2S(-f, 0);
+      const C  = W2S(-2 * f, 0);
+
+      // Mirror curve — drawn so its midpoint sits exactly on the optical vertex.
+      // Concave: cup opens left (toward observer), bulge to the right (away).
+      // Convex:  bulge points left (toward observer), F/C live behind.
+      const mirrorPath = type === 'concave'
+        ? `M ${xV - 24} ${yV - 64} Q ${xV + 24} ${yV} ${xV - 24} ${yV + 64}`
+        : `M ${xV + 24} ${yV - 64} Q ${xV - 24} ${yV} ${xV + 24} ${yV + 64}`;
+
+      // Principal rays — all originate at the object tip.
+
+      // Ray 1 — parallel to axis, then reflects through F.
+      const r1Mirror = W2S(0, hObj);
+      let r1End, r1Dashed = null;
+      if (isReal) {
+        // Extend reflected segment slightly past the image tip
+        r1End = {
+          x: r1Mirror.x + (imgTip.x - r1Mirror.x) * 1.18,
+          y: r1Mirror.y + (imgTip.y - r1Mirror.y) * 1.18,
+        };
+      } else {
+        // Reflected ray diverges from r1Mirror in direction (r1Mirror - F).
+        const dx = r1Mirror.x - F.x, dy = r1Mirror.y - F.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const ext = 200 / len;
+        r1End = { x: r1Mirror.x + dx * ext, y: r1Mirror.y + dy * ext };
+        r1Dashed = { from: r1Mirror, to: imgTip };
+      }
+
+      // Ray 2 — through F (or toward F for convex), reflects parallel to axis.
+      // Mirror-point y from line through (-a, hObj) and (-f, 0): y_M = -hObj·f/(a-f)
+      const ray2Y_world = -hObj * f / (a - f);
+      const r2Mirror = W2S(0, ray2Y_world);
+      let r2End, r2Dashed = null;
+      if (isReal) {
+        // Horizontal reflected segment ending just past the image tip
+        r2End = { x: imgTip.x - 30, y: r2Mirror.y };
+      } else {
+        // Goes left (away from mirror) at constant y
+        r2End = { x: 40, y: r2Mirror.y };
+        r2Dashed = { from: r2Mirror, to: imgTip };
+      }
+
+      // Ray 3 — through C (or toward C for convex), retraces back on itself.
+      // Mirror-point y from line through (-a, hObj) and (-2f, 0): y_M = -2·hObj·f/(a-2f)
+      const ray3Y_world = -2 * hObj * f / (a - 2 * f);
+      const r3Mirror = W2S(0, ray3Y_world);
+      // Reflected portion would retrace, so we just show the incoming line subtly.
+
+      // Marker id is type-scoped so multiple diagrams can co-exist on a page.
+      const inkArrowId = `mar-${type}-ink`;
+      const auxArrowId = `mar-${type}-aux`;
+
+      return html`
+        <svg viewBox="0 0 ${W} ${H}" class="diagram" role="img" aria-label=${`${type === 'concave' ? 'Duté' : 'Vypuklé'} zrcadlo, vznik obrazu`}>
+          <defs>
+            <marker id=${inkArrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink)"/>
+            </marker>
+            <marker id=${auxArrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux)"/>
+            </marker>
+          </defs>
+
+          <!-- optical axis -->
+          <line x1="20" y1=${yV} x2=${W - 20} y2=${yV} stroke="var(--ink-faint)" stroke-width="1"/>
+
+          <!-- mirror -->
+          <path d=${mirrorPath} fill="none" stroke="var(--ink)" stroke-width="3"/>
+
+          <!-- F and C — solid when in front of mirror (concave), dashed when behind (convex) -->
+          <circle cx=${F.x} cy=${F.y} r="4" fill=${isReal ? 'var(--ink)' : 'none'} stroke="var(--ink)" stroke-width="1.5" stroke-dasharray=${isReal ? '' : '2 2'}/>
+          <text x=${F.x - 4} y=${F.y + 18} font-size="11" fill="var(--ink)" font-weight="700">F</text>
+          <circle cx=${C.x} cy=${C.y} r="4" fill=${isReal ? 'var(--ink)' : 'none'} stroke="var(--ink)" stroke-width="1.5" stroke-dasharray=${isReal ? '' : '2 2'}/>
+          <text x=${C.x - 4} y=${C.y + 18} font-size="11" fill="var(--ink)" font-weight="700">C</text>
+
+          <!-- Ray 1 (parallel → F) -->
+          <line x1=${objTip.x}   y1=${objTip.y}   x2=${r1Mirror.x} y2=${r1Mirror.y} stroke="var(--diagram-aux)" stroke-width="1.6"/>
+          <line x1=${r1Mirror.x} y1=${r1Mirror.y} x2=${r1End.x}    y2=${r1End.y}    stroke="var(--diagram-aux)" stroke-width="1.6" marker-end=${`url(#${auxArrowId})`}/>
+          ${r1Dashed && html`
+            <line x1=${r1Dashed.from.x} y1=${r1Dashed.from.y} x2=${r1Dashed.to.x} y2=${r1Dashed.to.y} stroke="var(--construction)" stroke-width="1" stroke-dasharray="4 4"/>
+          `}
+
+          <!-- Ray 2 (through/toward F → parallel) -->
+          <line x1=${objTip.x}   y1=${objTip.y}   x2=${r2Mirror.x} y2=${r2Mirror.y} stroke="var(--diagram-aux)" stroke-width="1.6" opacity="0.85"/>
+          <line x1=${r2Mirror.x} y1=${r2Mirror.y} x2=${r2End.x}    y2=${r2End.y}    stroke="var(--diagram-aux)" stroke-width="1.6" opacity="0.85" marker-end=${`url(#${auxArrowId})`}/>
+          ${r2Dashed && html`
+            <line x1=${r2Dashed.from.x} y1=${r2Dashed.from.y} x2=${r2Dashed.to.x} y2=${r2Dashed.to.y} stroke="var(--construction)" stroke-width="1" stroke-dasharray="4 4"/>
+          `}
+
+          <!-- Ray 3 (through/toward C) — incoming only; reflection retraces -->
+          <line x1=${objTip.x} y1=${objTip.y} x2=${r3Mirror.x} y2=${r3Mirror.y} stroke="var(--diagram-aux)" stroke-width="1" opacity="0.35"/>
+
+          <!-- Object arrow -->
+          <line x1=${objBase.x} y1=${objBase.y} x2=${objTip.x} y2=${objTip.y} stroke="var(--ink)" stroke-width="2.5" marker-end=${`url(#${inkArrowId})`}/>
+          <text x=${objBase.x - 32} y=${objBase.y + 18} font-size="11" fill="var(--ink)">předmět</text>
+
+          <!-- Image arrow -->
+          <line x1=${imgBase.x} y1=${imgBase.y} x2=${imgTip.x} y2=${imgTip.y} stroke=${isReal ? 'var(--ink)' : 'var(--ink-soft)'} stroke-width="2.5" stroke-dasharray=${isReal ? '' : '6 4'} marker-end=${`url(#${inkArrowId})`}/>
+          <text x=${imgBase.x - 22} y=${imgBase.y + 18} font-size="11" fill=${isReal ? 'var(--ink)' : 'var(--ink-soft)'}>${isReal ? 'obraz' : 'obraz (zdánl.)'}</text>
+        </svg>
+      `;
+    }
+
+    // Representative cases for the static fallbacks. Computed = always correct.
+    render(html`<${MirrorDiagram} type="concave" a=${35} fAbs=${10} hObj=${5}/>`, document.getElementById('concave-stage'));
+    render(html`<${MirrorDiagram} type="convex"  a=${25} fAbs=${10} hObj=${5}/>`, document.getElementById('convex-stage'));
   </script>
 
 </body>

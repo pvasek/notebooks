@@ -100,6 +100,25 @@ The prep is a brief, not a script. It says *what to teach and what kinds of exam
 - **No inline `<script>` for logic** beyond a single mount call — keep logic in `.js` files so it's reusable and grep-able.
 - **Progressive enhancement**: lesson text should be readable even if JS fails to load. Interactive widgets sit alongside, not instead of, the explanation.
 
+## Tooling map (pick the right library per lesson type)
+
+Default: **compute geometry in JS, render with SVG.** That's enough for most math and optics. Reach for an engine only when the physics genuinely needs one (rigid bodies, particle systems).
+
+| Lesson type | Recommended approach |
+|---|---|
+| **Optics** (lenses, mirrors, refraction, prisms) | Computed geometry + SVG. Formulas: `1/a + 1/a' = 1/f`, Snell, principal-ray rules. No engine. |
+| **Wave / oscillation** (sound, light spectrum, simple harmonic motion) | Computed paths + SVG. If animated, `requestAnimationFrame` is plenty. |
+| **Mechanics** (collisions, gravity, springs, pendulums, projectile motion, levers) | **Matter.js** via CDN. Rigid-body engine, handles forces / constraints / collisions out of the box. |
+| **Particle systems, fluids, generative visuals** | **p5.js** via CDN. Fast canvas, friendly API. |
+| **Interactive geometry** (constructions, drag points) | Computed SVG. For heavier needs: **JSXGraph** via CDN. |
+| **Math graphs and plots** | Computed SVG for simple cases; **Plotly** or **Chart.js** if you need axes/legends polished. |
+
+**Why no engine for optics:** thin-mirror / thin-lens problems reduce to a few lines of arithmetic. An engine adds weight, contaminates the visual language, and obscures the physics you're teaching. Compute it.
+
+**Why an engine for mechanics:** writing collision detection, integrator step, constraint solver from scratch is days of work and easy to get wrong. Matter.js does it.
+
+Always prefer the simplest tool that works. If a slider + computed SVG is enough, stop there.
+
 ## Lesson style (applies to every generated lesson)
 
 These are universal rules — prep docs shouldn't repeat them. Subject-specific conventions can override later in a future `preparations/<subject>/_conventions.md`.

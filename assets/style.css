@@ -416,11 +416,12 @@ code, kbd, samp {
     linear-gradient(var(--ink), var(--ink)),
     linear-gradient(var(--ink), var(--ink)),
     linear-gradient(var(--ink), var(--ink));
+  /* Inset by 10px so the rounded widget corners (16px radius) don't clip them. */
   background-position:
-    0 0, 0 0,
-    100% 0, 100% 0,
-    0 100%, 0 100%,
-    100% 100%, 100% 100%;
+    10px 10px, 10px 10px,
+    calc(100% - 10px) 10px, calc(100% - 10px) 10px,
+    10px calc(100% - 10px), 10px calc(100% - 10px),
+    calc(100% - 10px) calc(100% - 10px), calc(100% - 10px) calc(100% - 10px);
   background-size:
     14px 2px, 2px 14px,
     14px 2px, 2px 14px,
