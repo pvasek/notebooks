@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Internet — od kabelu ke stránce · Sešity</title>
+  <meta name="description" content="Co se opravdu stane mezi kliknutím a zobrazením stránky. URL, DNS, HTTPS, hesla, phishing — interaktivně.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../../assets/style.css">
+
+  <style>
+    /* ============ Cesta klikem (path animation) ============ */
+    .path-anim { display: grid; gap: var(--space-4); }
+    .path-anim svg { width: 100%; height: auto; background: var(--paper); border-radius: var(--radius-sm); }
+    .path-packet {
+      transform-box: fill-box;
+      transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .path-anim-label {
+      font-family: var(--font-mono);
+      font-size: var(--fs-sm);
+      padding: var(--space-3) var(--space-4);
+      background: var(--paper-dim);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--marker);
+      min-height: 1.5em;
+    }
+    .path-anim-label.done { border-left-color: var(--highlight); }
+    .path-anim-controls { display: flex; gap: var(--space-3); }
+
+    /* ============ URL Anatomy ============ */
+    .url-anatomy { display: grid; gap: var(--space-4); }
+    .url-presets { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .url-presets button {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: var(--space-2) var(--space-3);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background 100ms ease;
+    }
+    .url-presets button:hover { background: var(--highlight); }
+    .url-presets button.active { background: var(--ink); color: var(--paper); }
+    .url-input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: var(--fs-md);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .url-breakdown {
+      font-family: var(--font-mono);
+      font-size: var(--fs-lg);
+      word-break: break-all;
+      padding: var(--space-4) var(--space-5);
+      background: var(--paper-dim);
+      border-radius: var(--radius-sm);
+      letter-spacing: -0.01em;
+    }
+    .url-part.url-protocol  { color: var(--ink-faint); }
+    .url-part.url-subdomain { color: var(--ink-soft); }
+    .url-part.url-domain    { color: var(--marker); font-weight: 700; background: color-mix(in srgb, var(--highlight) 35%, transparent); padding: 0 2px; }
+    .url-part.url-tld       { color: var(--marker); font-weight: 700; background: color-mix(in srgb, var(--highlight) 35%, transparent); padding: 0 2px 0 0; }
+    .url-part.url-path      { color: var(--ink); }
+    .url-part.url-query     { color: #2A7B2A; }
+    .url-part.url-hash      { color: #6B2D9B; }
+    .url-legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-3);
+      font-family: var(--font-mono);
+    }
+    .url-legend > div { display: grid; gap: 2px; }
+    .url-legend dt {
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .url-legend dd { margin: 0; font-size: var(--fs-xs); color: var(--ink); word-break: break-all; min-height: 1em; }
+    .url-legend dt.lg-protocol  { color: var(--ink-faint); }
+    .url-legend dt.lg-subdomain { color: var(--ink-soft); }
+    .url-legend dt.lg-domain    { color: var(--marker); }
+    .url-legend dt.lg-tld       { color: var(--marker); }
+    .url-legend dt.lg-path      { color: var(--ink); }
+    .url-legend dt.lg-query     { color: #2A7B2A; }
+    .url-legend dt.lg-hash      { color: #6B2D9B; }
+    .url-tip {
+      padding: var(--space-3) var(--space-4);
+      background: color-mix(in srgb, var(--highlight) 22%, var(--paper-dim));
+      border-left: 3px solid var(--highlight);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-sm);
+      line-height: 1.45;
+    }
+    .url-tip code {
+      font-family: var(--font-mono);
+      background: var(--paper);
+      padding: 0 4px;
+      border-radius: 3px;
+    }
+
+    /* ============ Phishing Detective ============ */
+    .phish { display: grid; gap: var(--space-4); }
+    .phish-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      letter-spacing: 0.05em;
+    }
+    .phish-bar .phish-counter { color: var(--ink-soft); }
+    .phish-bar .phish-score { font-weight: 700; color: var(--ink); }
+    .phish-card {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      padding: var(--space-5);
+      min-height: 100px;
+      transition: border-color 200ms ease, background 200ms ease;
+    }
+    .phish-card.correct { border-color: #2A7B2A; background: color-mix(in srgb, #C7E8C7 35%, var(--paper)); }
+    .phish-card.wrong   { border-color: var(--marker); background: color-mix(in srgb, var(--marker) 18%, var(--paper)); }
+    .phish-card .phish-kind {
+      font-family: var(--font-mono);
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      margin-bottom: var(--space-3);
+    }
+    .phish-card .phish-from {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      color: var(--ink-soft);
+      margin-bottom: var(--space-2);
+    }
+    .phish-card .phish-from strong { color: var(--ink); font-weight: 700; }
+    .phish-card .phish-subject {
+      font-weight: 700;
+      font-size: var(--fs-md);
+      margin-bottom: var(--space-3);
+    }
+    .phish-card .phish-body {
+      font-size: var(--fs-sm);
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+    .phish-card .phish-url {
+      font-family: var(--font-mono);
+      font-size: var(--fs-md);
+      color: var(--ink);
+      word-break: break-all;
+    }
+    .phish-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .phish-btn {
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background 100ms ease, transform 80ms ease;
+    }
+    .phish-btn:hover:not(:disabled) { background: var(--highlight); transform: translateY(-1px); }
+    .phish-btn:disabled { opacity: 0.55; cursor: default; }
+    .phish-btn.legit-btn { /* extra style if needed */ }
+    .phish-btn.phish-btn-pick { /* placeholder */ }
+    .phish-tell {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-sm);
+      line-height: 1.5;
+    }
+    .phish-tell.correct { background: color-mix(in srgb, #C7E8C7 50%, var(--paper-dim)); border-left: 3px solid #2A7B2A; }
+    .phish-tell.wrong   { background: color-mix(in srgb, var(--marker) 18%, var(--paper-dim)); border-left: 3px solid var(--marker); }
+    .phish-tell strong { color: var(--ink); }
+    .phish-next {
+      padding: var(--space-3) var(--space-5);
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      justify-self: start;
+    }
+    .phish-final {
+      text-align: center;
+      padding: var(--space-5);
+      background: var(--paper-dim);
+      border-radius: var(--radius);
+    }
+    .phish-final h4 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--fs-xl);
+      margin: 0 0 var(--space-3) 0;
+      font-variation-settings: 'SOFT' 60, 'opsz' 96;
+    }
+
+    /* ============ Heslo síla ============ */
+    .heslo { display: grid; gap: var(--space-3); }
+    .heslo-input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: var(--fs-md);
+      background: var(--paper);
+    }
+    .heslo-bar {
+      width: 100%;
+      height: 14px;
+      background: var(--paper-dim);
+      border-radius: 7px;
+      overflow: hidden;
+      border: 1px solid var(--ink);
+    }
+    .heslo-bar-fill {
+      height: 100%;
+      transition: width 280ms ease, background 280ms ease;
+      border-radius: 7px;
+    }
+    .heslo-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      font-family: var(--font-mono);
+      margin: 0;
+    }
+    .heslo-stats > div { display: grid; gap: 2px; }
+    .heslo-stats dt {
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+      font-weight: 600;
+    }
+    .heslo-stats dd { margin: 0; font-size: var(--fs-md); font-weight: 500; }
+    .heslo-reason {
+      font-family: var(--font-mono);
+      font-size: var(--fs-sm);
+      padding: var(--space-3) var(--space-4);
+      background: var(--paper-dim);
+      border-radius: var(--radius-sm);
+      margin: 0;
+    }
+    .heslo-priv {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <article class="lesson">
+
+    <header class="lesson-header">
+      <p class="eyebrow">
+        <span class="dot"></span>
+        <a href="../../../">Sešity</a> · <a href="../">Informatika</a> · Internet
+      </p>
+      <h1>Internet — od&nbsp;kabelu ke&nbsp;stránce</h1>
+      <p class="lead">
+        Co se <span class="hl">opravdu</span> stane mezi kliknutím a&nbsp;tím,
+        než se ti rozsvítí stránka? Pojďme to projít — od&nbsp;kabelu na&nbsp;dně oceánu
+        až po&nbsp;<span class="hl">zámeček</span> v&nbsp;adresním řádku.
+      </p>
+      <dl class="meta">
+        <div><dt>Úroveň</dt><dd>9.&nbsp;třída</dd></div>
+        <div><dt>Délka</dt><dd>50&nbsp;min</dd></div>
+        <div><dt>Předpoklady</dt><dd>prohlížeč</dd></div>
+      </dl>
+    </header>
+
+    <!-- ====================================================== -->
+    <!-- 01 — INTERNET × WEB                                    -->
+    <!-- ====================================================== -->
+    <section class="block" id="internet-vs-web">
+      <h2 class="block-h">
+        <span class="block-n">01</span>
+        Internet a&nbsp;web nejsou totéž
+      </h2>
+
+      <p>
+        Když řekneš „nejde mi internet", obvykle myslíš, že nejdou stránky.
+        Jenže to není totéž. <span class="hl">Internet</span> je
+        <strong>infrastruktura</strong> — propletená síť kabelů, routerů a&nbsp;datových
+        center po&nbsp;celém světě. Mezi kontinenty vedou hlavně optické kabely
+        po&nbsp;dně oceánu, doplněné satelity a&nbsp;mobilními vysílači.
+      </p>
+
+      <p>
+        <span class="hl">Web</span> (WWW) je <strong>jedna ze&nbsp;služeb</strong>,
+        co po&nbsp;té síti běží. Vznikl v&nbsp;roce 1989 v&nbsp;CERNu, vymyslel ho
+        Tim Berners-Lee. Funguje na&nbsp;principu „klikni na&nbsp;odkaz, otevře se stránka".
+        Po&nbsp;těch stejných kabelech ale jezdí i&nbsp;e-maily, video hovory, online hry,
+        cloudové zálohy a&nbsp;spousta dalších služeb.
+      </p>
+
+      <aside class="callout callout--tip">
+        <p class="callout-tag">Analogie</p>
+        <p>
+          Internet je <strong>silnice</strong>. Po&nbsp;těch silnicích jezdí různá auta —
+          osobní (web), nákladní (e-mail), záchranky (DNS), kamiony (cloud).
+          Když nejede tramvaj, neznamená to, že nefungují silnice.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 02 — CESTA KLIKEM                                      -->
+    <!-- ====================================================== -->
+    <section class="block" id="cesta-klikem">
+      <h2 class="block-h">
+        <span class="block-n">02</span>
+        Cesta klikem ke&nbsp;stránce
+      </h2>
+
+      <p>
+        Tohle je nejdůležitější obrázek celé lekce. Co se stane, když do&nbsp;prohlížeče
+        napíšeš třeba <code>cs.wikipedia.org/wiki/Praha</code> a&nbsp;zmáčkneš Enter?
+        Pojďme to projít krok po&nbsp;kroku — spusť animaci dole.
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Interaktivní · 01 · Cesta paketu</p>
+        <div class="widget-stage" id="path-stage"></div>
+        <figcaption class="widget-hint">
+          Paket = malý kousek dat. Velký soubor (např. HTML stránka) se rozdělí
+          na&nbsp;mnoho paketů — ty jdou různými cestami a&nbsp;na&nbsp;druhé straně se zase složí.
+        </figcaption>
+      </figure>
+
+      <p>
+        Klíčové role: <span class="hl">prohlížeč</span> (klient) chce stránku.
+        <span class="hl">DNS</span> mu řekne, kam pro&nbsp;ni jít.
+        <span class="hl">Web server</span> mu ji pošle. Cestou
+        po&nbsp;internetu pakety prochází přes desítky <strong>routerů</strong> —
+        krabic, které je směrují správným směrem (i&nbsp;tvůj domácí Wi-Fi router je router).
+      </p>
+
+      <aside class="callout callout--warn">
+        <p class="callout-tag">Pozor</p>
+        <p>
+          Když dostane prohlížeč HTML, nemá ještě hotovo. HTML je jen kostra,
+          uvnitř jsou odkazy na&nbsp;CSS soubory, obrázky a&nbsp;JavaScript.
+          Pro&nbsp;každý prohlížeč pošle <strong>další požadavek</strong>. Jedna „stránka"
+          se tak skládá z&nbsp;klidně desítek dotazů na&nbsp;server.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 03 — ADRESOVÁNÍ                                        -->
+    <!-- ====================================================== -->
+    <section class="block" id="adresovani">
+      <h2 class="block-h">
+        <span class="block-n">03</span>
+        Adresy — IP, DNS, URL
+      </h2>
+
+      <h3>IP adresa</h3>
+      <p>
+        Každé zařízení v&nbsp;síti má číselnou adresu. Stará verze <strong>IPv4</strong>
+        používá čtyři čísla 0–255 (např. <code>192.168.1.15</code>) — adres je tak ~4,3&nbsp;miliardy
+        a&nbsp;už jich je málo. Nová <strong>IPv6</strong> používá osm hexadecimálních
+        skupin (<code>2001:db8::1</code>) — adres je řádově 10³⁸, prakticky neomezeně.
+      </p>
+      <p>
+        IP může být <strong>veřejná</strong> (vidí ji celý internet) nebo
+        <strong>privátní</strong> (jen ve&nbsp;tvojí domácí síti — typicky 192.168.x.x).
+        Více lidí v&nbsp;jedné domácnosti sdílí stejnou veřejnou IP.
+      </p>
+
+      <h3>DNS — telefonní seznam internetu</h3>
+      <p>
+        Pamatovat si IP adresy je nepříjemné. <span class="hl">DNS</span>
+        (Domain Name System) ti to nemusí — přeloží srozumitelné jméno
+        na&nbsp;IP. Když napíšeš <code>seznam.cz</code>, prohlížeč nejprve zavolá DNS
+        a&nbsp;ten mu řekne: „je to 77.x.x.x". Teprve potom prohlížeč ví, kam dotaz poslat.
+      </p>
+
+      <aside class="callout callout--tip">
+        <p class="callout-tag">Otázka</p>
+        <p>
+          Co by se stalo, kdyby DNS na&nbsp;celém světě přestalo fungovat?
+          Stránky by se nedaly otevřít přes jména (`seznam.cz`), ale pokud bys znal
+          IP, šly by načíst přímo přes <code>http://77.x.x.x</code>. Většina lidí ale IP nezná —
+          internet by se tak prakticky zastavil.
+        </p>
+      </aside>
+
+      <h3>URL — celá adresa stránky</h3>
+      <p>
+        <span class="hl">URL</span> (Uniform Resource Locator) je celá adresa,
+        kterou píšeš do&nbsp;prohlížeče. Skládá se z&nbsp;několika částí, a&nbsp;tohle
+        je důležité — protože phisheři to zneužívají. Pohraj si:
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Interaktivní · 02 · Anatomie URL</p>
+        <div class="widget-stage" id="url-stage"></div>
+        <figcaption class="widget-hint">
+          Klíčové je <strong>doména&nbsp;+&nbsp;TLD</strong> (žlutě zvýrazněno).
+          To je to, kdo web doopravdy vlastní.
+        </figcaption>
+      </figure>
+
+      <p>
+        Zákeřnost phisherů spočívá v&nbsp;tom, že subdoménu si může pojmenovat,
+        jak chce. Adresa <code>alza.shop-login.cz</code> nepatří Alze — patří někomu,
+        kdo si zaregistroval <code>shop-login.cz</code> a&nbsp;přidal k&nbsp;tomu subdoménu
+        <code>alza</code>. Skutečnou doménu si vždy hledej <strong>od&nbsp;konce</strong>,
+        těsně před první lomítkem.
+      </p>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 04 — JAK VZNIKÁ STRÁNKA                                -->
+    <!-- ====================================================== -->
+    <section class="block" id="webove-stranky">
+      <h2 class="block-h">
+        <span class="block-n">04</span>
+        Z čeho se skládá stránka
+      </h2>
+
+      <p>
+        Když server pošle prohlížeči HTML, jsou v&nbsp;něm odkazy na&nbsp;další soubory.
+        Stránky jsou skoro vždy směs tří technologií:
+      </p>
+
+      <ul>
+        <li><strong>HTML</strong> — kostra. Co je text, co je obrázek, co je nadpis.</li>
+        <li><strong>CSS</strong> — vzhled. Barvy, písma, rozložení.</li>
+        <li><strong>JavaScript</strong> — chování. Tlačítka, animace, formuláře, dnes i&nbsp;celé webové aplikace (e-maily v&nbsp;prohlížeči, mapy, hry).</li>
+      </ul>
+
+      <aside class="callout callout--tip">
+        <p class="callout-tag">Analogie</p>
+        <p>
+          HTML je <strong>člověk</strong>. CSS je <strong>oblečení</strong>. JavaScript je <strong>co dělá</strong>.
+        </p>
+      </aside>
+
+      <h3>Statický × dynamický web</h3>
+      <p>
+        <strong>Statický web</strong> = server pošle všem stejnou hotovou stránku.
+        Třeba tahle lekce je statická — `.html` soubor leží na&nbsp;disku a&nbsp;každý
+        ho dostane identický.
+      </p>
+      <p>
+        <strong>Dynamický web</strong> = server stránku skládá při každém požadavku
+        z&nbsp;<strong>databáze</strong>. Wikipedie, e-shopy, vyhledávač, sociální sítě —
+        pokaždé jiný obsah pro&nbsp;jiného uživatele. Backend (program běžící
+        na&nbsp;serveru) si vytáhne data z&nbsp;databáze a&nbsp;sestaví HTML „na&nbsp;míru".
+      </p>
+
+      <p>
+        Z toho plynou tři role, o&nbsp;kterých dnes uslyšíš každého programátora:
+      </p>
+      <ul>
+        <li><strong>Frontend</strong> — to, co vidíš v&nbsp;prohlížeči (HTML, CSS, JS).</li>
+        <li><strong>Backend</strong> — to, co běží na&nbsp;serveru (databáze, logika).</li>
+        <li><strong>API</strong> — způsob, jakým spolu frontend a&nbsp;backend mluví. Posílá si typicky strukturovaná data ve&nbsp;formátu JSON.</li>
+      </ul>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 05 — BEZPEČNOST                                        -->
+    <!-- ====================================================== -->
+    <section class="block" id="bezpecnost">
+      <h2 class="block-h">
+        <span class="block-n">05</span>
+        Bezpečnost
+      </h2>
+
+      <h3>HTTPS — co opravdu zaručuje</h3>
+      <p>
+        Když má URL <code>https://</code> a&nbsp;v&nbsp;adresním řádku je zámeček,
+        prohlížeč ti říká: „přenos dat mezi tebou a&nbsp;tímhle serverem je
+        <span class="hl">šifrovaný</span>." To znamená, že nikdo cestou nečte ani nemění
+        data — soused na&nbsp;Wi-Fi, tvůj poskytovatel, kavárenský router. Dobré.
+      </p>
+
+      <aside class="callout callout--warn">
+        <p class="callout-tag">Pozor — velký mýtus</p>
+        <p>
+          Zámeček <strong>neznamená</strong>, že webu můžeš věřit. Šifruje jen přenos,
+          ale neříká, kdo je na&nbsp;druhé straně. Phisher si zaplatí HTTPS certifikát
+          za&nbsp;půl hodiny zdarma a&nbsp;jeho falešná stránka bude mít zámeček úplně stejně
+          jako pravá banka. <strong>Kontroluj doménu, ne zámeček.</strong>
+        </p>
+      </aside>
+
+      <h3>Hesla — délka rozhoduje</h3>
+      <p>
+        Útočník dnes neháže do&nbsp;dveří jeden klíč za&nbsp;druhým — má počítač, který
+        zkouší <strong>miliardy hesel za&nbsp;vteřinu</strong>. A&nbsp;začne těmi nejčastějšími
+        slovy ze&nbsp;slovníku, ne náhodnými písmeny. <strong>Délka</strong> je proto víc
+        než „složitost". Vyzkoušej si:
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Interaktivní · 03 · Síla hesla</p>
+        <div class="widget-stage" id="heslo-stage"></div>
+        <figcaption class="widget-hint">
+          Vyzkoušej: <code>Pavel123!</code> × <code>kolo-žralok-oblak-tramvaj</code>.
+          Druhé heslo je delší a&nbsp;přitom snadnější si ho zapamatovat.
+        </figcaption>
+      </figure>
+
+      <aside class="callout callout--remember">
+        <p class="callout-tag">Pamatuj</p>
+        <p>
+          <strong>Dlouhé heslo&nbsp;+&nbsp;správce hesel&nbsp;+&nbsp;dvoufaktor (2FA).</strong>
+          To je celá tajná receptura na&nbsp;90 % bezpečnosti běžného uživatele.
+          Správce hesel (1Password, Bitwarden) ti vygeneruje a&nbsp;zapamatuje unikátní
+          heslo pro&nbsp;každý web. 2FA znamená, že kromě hesla potřebuješ ještě druhý krok
+          (kód z&nbsp;aplikace, klíč) — i&nbsp;když ti někdo heslo ukradne, bez toho druhého
+          se nikam nedostane.
+        </p>
+      </aside>
+
+      <h3>Phishing — kdo to je?</h3>
+      <p>
+        <span class="hl">Phishing</span> je nejčastější útok na&nbsp;běžného uživatele.
+        Útočník nepotřebuje umět hacknout banku — stačí ho přesvědčit
+        <em>tebe</em>, abys mu sám napsal heslo. Falešná stránka, falešný e-mail,
+        falešná SMS. Vodítka: tlak na&nbsp;rychlost („do&nbsp;24&nbsp;hodin!"), divná URL,
+        nečekané přílohy, citově laděné výzvy.
+      </p>
+      <p>
+        Pojďme hrát detektiva. U&nbsp;každého příkladu klikni, jestli je
+        <strong>pravý</strong> nebo <strong>podvod</strong>:
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Interaktivní · 04 · Phishing detektiv</p>
+        <div class="widget-stage" id="phish-stage"></div>
+        <figcaption class="widget-hint">
+          Šest příkladů, na&nbsp;konci uvidíš skóre. Tip: vždycky se podívej na&nbsp;skutečnou
+          doménu (těsně před prvním lomítkem) — to je to nejdůležitější vodítko.
+        </figcaption>
+      </figure>
+
+      <h3>Cookies a&nbsp;digitální stopa</h3>
+      <p>
+        <strong>Cookies</strong> jsou drobné kousky dat, které si web ukládá
+        do&nbsp;tvého prohlížeče. Některé jsou nezbytné — drží přihlášení,
+        košík v&nbsp;e-shopu, nastavený jazyk. Jiné jsou sledovací — předávají si
+        informace mezi weby, aby ti reklamní systémy mohly cílit reklamu.
+        Proto v&nbsp;EU musí weby ptát na&nbsp;souhlas.
+      </p>
+      <p>
+        <strong>Digitální stopa</strong> = vše, co po&nbsp;sobě na&nbsp;internetu necháváš:
+        příspěvky, lajky, komentáře, historie hledání, metadata fotek (často včetně GPS).
+        Internet má dlouhou paměť — i&nbsp;„smazaný" post může být uložený jako
+        screenshot, v&nbsp;cache vyhledávače nebo v&nbsp;archivu (Wayback Machine).
+        Než něco vystavíš, představ si, že to po&nbsp;deseti letech čte tvůj zaměstnavatel.
+      </p>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- KVÍZ                                                   -->
+    <!-- ====================================================== -->
+    <section class="block" id="kviz">
+      <h2 class="block-h">
+        <span class="block-n">★</span>
+        Vyzkoušej si to
+      </h2>
+      <div id="quiz"></div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- CO SI ODNÉST                                           -->
+    <!-- ====================================================== -->
+    <section class="takeaway">
+      <p class="takeaway-tag">Co si odnést</p>
+      <ol>
+        <li>Internet = infrastruktura (kabely, routery, IP). Web = jedna ze&nbsp;služeb nad ní.</li>
+        <li>Když klikneš: prohlížeč zeptá DNS na&nbsp;IP, pošle požadavek serveru, dostane HTML, potom si stáhne CSS/JS/obrázky a&nbsp;teprve pak vykreslí.</li>
+        <li>V URL je nejdůležitější <strong>doména&nbsp;+&nbsp;TLD</strong>. Subdoménu si může pojmenovat kdokoli.</li>
+        <li>HTTPS šifruje přenos. <strong>Neříká</strong> ti, jestli serveru můžeš věřit.</li>
+        <li>Dlouhé heslo&nbsp;+&nbsp;správce hesel&nbsp;+&nbsp;2FA. A&nbsp;u&nbsp;každého e-mailu se ptej, jestli odesílatel a&nbsp;URL skutečně sedí.</li>
+      </ol>
+    </section>
+
+  </article>
+
+  <script type="module">
+    import { html, render, useState, useEffect } from '../../../lib/preact.js';
+
+    const NBSP = ' ';
+
+    // ============================================================
+    // 1. CESTA KLIKEM (path animation)
+    // ============================================================
+
+    function PathAnimation() {
+      const [step, setStep] = useState(0);
+
+      const browser = [80, 150];
+      const dns     = [300, 60];
+      const server  = [520, 150];
+
+      const STEPS = [
+        { pos: browser, label: 'Klikni „Spustit cestu" pro start.', tone: 'idle' },
+        { pos: dns,     label: '1. Prohlížeč → DNS: „Kde najdu cs.wikipedia.org?"', tone: 'run' },
+        { pos: browser, label: '2. DNS → Prohlížeč: „IP je 208.80.154.224"', tone: 'run' },
+        { pos: server,  label: '3. Prohlížeč → Server: „GET /wiki/Praha" (přes HTTPS)', tone: 'run' },
+        { pos: browser, label: '4. Server → Prohlížeč: HTML obsah stránky', tone: 'run' },
+        { pos: server,  label: '5. Prohlížeč → Server: „Pošli ještě CSS, JS, obrázky"', tone: 'run' },
+        { pos: browser, label: '6. Server → Prohlížeč: Tady jsou všechny zdroje.', tone: 'run' },
+        { pos: browser, label: '✓ Prohlížeč vykresluje stránku. Hotovo.', tone: 'done' },
+      ];
+
+      useEffect(() => {
+        if (step > 0 && step < STEPS.length - 1) {
+          const t = setTimeout(() => setStep(step + 1), 1800);
+          return () => clearTimeout(t);
+        }
+      }, [step]);
+
+      const current = STEPS[step];
+      const packetColor = current.tone === 'done' ? 'var(--highlight)' : 'var(--marker)';
+
+      return html`
+        <div class="path-anim">
+          <svg viewBox="0 0 600 240" role="img" aria-label="Animace cesty požadavku">
+            <!-- connection guides -->
+            <line x1=${browser[0] + 26} y1=${browser[1] - 14} x2=${dns[0] - 24} y2=${dns[1] + 16} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
+            <line x1=${dns[0] + 24}     y1=${dns[1] + 16}     x2=${server[0] - 26} y2=${server[1] - 14} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
+            <line x1=${browser[0] + 26} y1=${browser[1]}      x2=${server[0] - 26} y2=${server[1]}      stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
+
+            <!-- Browser icon -->
+            <g transform=${`translate(${browser[0]}, ${browser[1]})`}>
+              <rect x="-26" y="-22" width="52" height="40" rx="3" fill="var(--paper-dim)" stroke="var(--ink)" stroke-width="1.5"/>
+              <line x1="-26" y1="-11" x2="26" y2="-11" stroke="var(--ink)" stroke-width="1.5"/>
+              <circle cx="-19" cy="-17" r="2" fill="var(--marker)"/>
+              <circle cx="-13" cy="-17" r="2" fill="#E89E3D"/>
+              <circle cx="-7"  cy="-17" r="2" fill="#5E9E3D"/>
+            </g>
+            <text x=${browser[0]} y=${browser[1] + 38} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">prohlížeč</text>
+
+            <!-- DNS icon -->
+            <g transform=${`translate(${dns[0]}, ${dns[1]})`}>
+              <rect x="-24" y="-20" width="48" height="36" rx="2" fill="var(--paper-dim)" stroke="var(--ink)" stroke-width="1.5"/>
+              <line x1="-16" y1="-10" x2="16" y2="-10" stroke="var(--ink)" stroke-width="1"/>
+              <line x1="-16" y1="-3"  x2="16" y2="-3"  stroke="var(--ink)" stroke-width="1"/>
+              <line x1="-16" y1="4"   x2="16" y2="4"   stroke="var(--ink)" stroke-width="1"/>
+              <line x1="-16" y1="11"  x2="16" y2="11"  stroke="var(--ink)" stroke-width="1"/>
+            </g>
+            <text x=${dns[0]} y=${dns[1] + 36} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">DNS server</text>
+
+            <!-- Web server icon -->
+            <g transform=${`translate(${server[0]}, ${server[1]})`}>
+              <rect x="-24" y="-20" width="48" height="36" rx="2" fill="var(--paper-dim)" stroke="var(--ink)" stroke-width="1.5"/>
+              <line x1="-16" y1="-10" x2="16" y2="-10" stroke="var(--ink)" stroke-width="1"/>
+              <line x1="-16" y1="-3"  x2="16" y2="-3"  stroke="var(--ink)" stroke-width="1"/>
+              <line x1="-16" y1="4"   x2="16" y2="4"   stroke="var(--ink)" stroke-width="1"/>
+              <circle cx="-14" cy="11" r="2" fill="#5E9E3D"/>
+            </g>
+            <text x=${server[0]} y=${server[1] + 38} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">web server</text>
+
+            <!-- Packet -->
+            ${step > 0 && html`
+              <g class="path-packet" style=${`transform: translate(${current.pos[0]}px, ${current.pos[1]}px);`}>
+                <circle r="11" fill=${packetColor} stroke="var(--ink)" stroke-width="1.5"/>
+              </g>
+            `}
+          </svg>
+
+          <div class=${`path-anim-label ${current.tone === 'done' ? 'done' : ''}`}>${current.label}</div>
+
+          <div class="path-anim-controls">
+            <button class="open-interactive" onClick=${() => setStep(step === 0 ? 1 : 0)}>
+              ${step === 0 ? 'Spustit cestu →' : 'Spustit znovu'}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    render(html`<${PathAnimation} />`, document.getElementById('path-stage'));
+
+    // ============================================================
+    // 2. URL ANATOMY
+    // ============================================================
+
+    function parseUrl(url) {
+      const parts = { protocol: '', subdomain: '', domain: '', tld: '', path: '', query: '', hash: '' };
+      let rest = url;
+
+      const protoMatch = rest.match(/^([a-z]+):\/\//i);
+      if (protoMatch) { parts.protocol = protoMatch[0]; rest = rest.slice(protoMatch[0].length); }
+
+      const hashIdx = rest.indexOf('#');
+      if (hashIdx >= 0) { parts.hash = rest.slice(hashIdx); rest = rest.slice(0, hashIdx); }
+
+      const qIdx = rest.indexOf('?');
+      if (qIdx >= 0) { parts.query = rest.slice(qIdx); rest = rest.slice(0, qIdx); }
+
+      const slashIdx = rest.indexOf('/');
+      let hostname = rest;
+      if (slashIdx >= 0) { parts.path = rest.slice(slashIdx); hostname = rest.slice(0, slashIdx); }
+
+      const labels = hostname.split('.').filter(x => x);
+      if (labels.length >= 2) {
+        parts.tld = '.' + labels[labels.length - 1];
+        parts.domain = labels[labels.length - 2];
+        if (labels.length > 2) {
+          parts.subdomain = labels.slice(0, -2).join('.') + '.';
+        }
+      } else if (labels.length === 1) {
+        parts.domain = labels[0];
+      }
+      return parts;
+    }
+
+    function URLAnatomy() {
+      const presets = [
+        { label: 'Seznam',     url: 'https://www.seznam.cz/sport?id=123' },
+        { label: 'Alza shop',  url: 'https://shop.alza.cz/notebook?id=42#popis' },
+        { label: 'Mapy.cz',    url: 'https://mapy.cz/turisticka?q=Praha' },
+        { label: 'Podezřelá',  url: 'https://alza-login.shop-cz.com/secure/' },
+      ];
+
+      const [url, setUrl] = useState(presets[0].url);
+      const parts = parseUrl(url);
+
+      return html`
+        <div class="url-anatomy">
+          <div class="url-presets">
+            ${presets.map(p => html`
+              <button class=${url === p.url ? 'active' : ''} onClick=${() => setUrl(p.url)}>${p.label}</button>
+            `)}
+          </div>
+
+          <input
+            class="url-input"
+            type="text"
+            value=${url}
+            onInput=${e => setUrl(e.target.value)}
+            spellcheck=${false}
+            aria-label="URL k rozboru"
+          />
+
+          <div class="url-breakdown">
+            <span class="url-part url-protocol">${parts.protocol}</span><span class="url-part url-subdomain">${parts.subdomain}</span><span class="url-part url-domain">${parts.domain}</span><span class="url-part url-tld">${parts.tld}</span><span class="url-part url-path">${parts.path}</span><span class="url-part url-query">${parts.query}</span><span class="url-part url-hash">${parts.hash}</span>
+          </div>
+
+          <dl class="url-legend">
+            <div><dt class="lg-protocol">protokol</dt><dd>${parts.protocol || '—'}</dd></div>
+            ${parts.subdomain && html`<div><dt class="lg-subdomain">subdoména</dt><dd>${parts.subdomain}</dd></div>`}
+            <div><dt class="lg-domain">doména</dt><dd>${parts.domain || '—'}</dd></div>
+            <div><dt class="lg-tld">TLD</dt><dd>${parts.tld || '—'}</dd></div>
+            ${parts.path && html`<div><dt class="lg-path">cesta</dt><dd>${parts.path}</dd></div>`}
+            ${parts.query && html`<div><dt class="lg-query">parametry</dt><dd>${parts.query}</dd></div>`}
+            ${parts.hash && html`<div><dt class="lg-hash">kotva</dt><dd>${parts.hash}</dd></div>`}
+          </dl>
+
+          <div class="url-tip">
+            Skutečný majitel webu je ten, kdo vlastní <code>${parts.domain}${parts.tld}</code>.
+            Subdoménu (vlevo) si může pojmenovat jakkoliv — i&nbsp;jako <code>alza</code> nebo <code>seznam</code>.
+            ${parts.domain && parts.tld && (
+              ['shop-cz', 'security-check', 'login-cz', 'overeni', 'bank0vni'].some(s => parts.domain.includes(s))
+              || /\d/.test(parts.domain) && parts.domain.length < 12
+            ) ? html`<br/><strong style=${{ color: 'var(--marker)' }}>Tohle vypadá podezřele.</strong> Jméno domény má nezvyklý tvar — podívej se ještě jednou, jestli sedí.` : null}
+          </div>
+        </div>
+      `;
+    }
+
+    render(html`<${URLAnatomy} />`, document.getElementById('url-stage'));
+
+    // ============================================================
+    // 3. HESLO SÍLA
+    // ============================================================
+
+    const COMMON_PWD_PARTS = [
+      'heslo', 'kolo', 'auto', 'fotbal', 'hokej', 'tenis',
+      'pavel', 'jana', 'petr', 'martin', 'anna', 'michal', 'jiri', 'lukas', 'eva', 'marie', 'lucie', 'tomas', 'jan', 'tereza', 'katerina', 'hana',
+      'leden', 'unor', 'brezen', 'duben', 'kveten', 'cerven', 'cervenec', 'srpen', 'zari', 'rijen', 'listopad', 'prosinec',
+      'praha', 'brno', 'ostrava', 'plzen',
+      'password', 'passwd', 'qwerty', 'admin', 'login', 'welcome',
+      '123', '1234', '12345', '123456', '0000', '1111',
+    ];
+
+    function estimateEntropy(pwd) {
+      if (!pwd) return 0;
+      let charset = 0;
+      if (/[a-z]/.test(pwd)) charset += 26;
+      if (/[A-Z]/.test(pwd)) charset += 26;
+      if (/[0-9]/.test(pwd)) charset += 10;
+      if (/[^a-zA-Z0-9]/.test(pwd)) charset += 32;
+      if (charset === 0) return 0;
+      let bits = pwd.length * Math.log2(charset);
+      const lower = pwd.toLowerCase();
+      for (const word of COMMON_PWD_PARTS) {
+        if (lower.includes(word)) bits -= Math.min(word.length * 2, 15);
+      }
+      return Math.max(0, bits);
+    }
+
+    function formatTime(seconds) {
+      if (!isFinite(seconds)) return 'déle než stáří vesmíru';
+      if (seconds < 0.001) return 'okamžitě';
+      if (seconds < 60) return `${Math.max(1, Math.round(seconds))} sekund`;
+      if (seconds < 3600) return `${Math.round(seconds / 60)} minut`;
+      if (seconds < 86400) return `${Math.round(seconds / 3600)} hodin`;
+      if (seconds < 86400 * 30) return `${Math.round(seconds / 86400)} dnů`;
+      if (seconds < 86400 * 365) return `${Math.round(seconds / 86400 / 30)} měsíců`;
+      if (seconds < 86400 * 365 * 1000) return `${Math.round(seconds / 86400 / 365)} let`;
+      if (seconds < 86400 * 365 * 1e6) return `${Math.round(seconds / 86400 / 365 / 1000)} tisíc let`;
+      if (seconds < 86400 * 365 * 1e9) return `${Math.round(seconds / 86400 / 365 / 1e6)} milionů let`;
+      if (seconds < 86400 * 365 * 1e13) return `${(seconds / 86400 / 365 / 1e9).toFixed(0)} miliard let`;
+      return 'déle než stáří vesmíru';
+    }
+
+    function HesloSila() {
+      const [pwd, setPwd] = useState('');
+      const entropy = estimateEntropy(pwd);
+      const ATTEMPTS_PER_SEC = 1e10; // moderní GPU
+      const seconds = Math.pow(2, entropy) / ATTEMPTS_PER_SEC;
+
+      let color, reason;
+      const lower = pwd.toLowerCase();
+      const hasDictWord = COMMON_PWD_PARTS.some(w => lower.includes(w));
+
+      if (!pwd) {
+        color = 'var(--ink-faint)'; reason = 'Začni psát heslo nahoře.';
+      } else if (entropy < 28) {
+        color = 'var(--marker)';
+        if (pwd.length < 8) reason = 'Krátké — počítač to vyzkouší během vteřin.';
+        else if (/^\d+$/.test(pwd)) reason = 'Jen čísla — málo možností.';
+        else if (hasDictWord) reason = 'Obsahuje slovníkové slovo. Útok začne právě tím.';
+        else reason = 'Příliš krátké nebo z malé znakové sady.';
+      } else if (entropy < 50) {
+        color = '#E89E3D';
+        reason = hasDictWord
+          ? 'Lepší, ale slovníkové slovo to oslabuje. Přidej délku.'
+          : 'Lepší — ale ne dost dlouhé, aby vydrželo dlouhý útok.';
+      } else if (entropy < 75) {
+        color = '#5E9E3D';
+        reason = 'Dobré. Dlouhé heslo je správný směr.';
+      } else {
+        color = '#2A7B2A';
+        reason = 'Výborně. Tohle nikdo neprolomí.';
+      }
+
+      return html`
+        <div class="heslo">
+          <input
+            class="heslo-input"
+            type="text"
+            value=${pwd}
+            onInput=${e => setPwd(e.target.value)}
+            placeholder="Napiš heslo…"
+            spellcheck=${false}
+            aria-label="Heslo k otestování"
+          />
+          <div class="heslo-bar">
+            <div class="heslo-bar-fill" style=${{ width: `${Math.min(100, entropy * 1.1)}%`, background: color }}></div>
+          </div>
+          <dl class="heslo-stats">
+            <div>
+              <dt>Doba prolomení</dt>
+              <dd style=${{ color }}>${formatTime(seconds)}</dd>
+            </div>
+            <div>
+              <dt>Entropie</dt>
+              <dd>${entropy.toFixed(1)}${NBSP}bitů</dd>
+            </div>
+          </dl>
+          <p class="heslo-reason">${reason}</p>
+          <p class="heslo-priv">Heslo nikam neopouští tvůj prohlížeč. Veškerý výpočet probíhá v&nbsp;JavaScriptu přímo tady.</p>
+        </div>
+      `;
+    }
+
+    render(html`<${HesloSila} />`, document.getElementById('heslo-stage'));
+
+    // ============================================================
+    // 4. PHISHING DETECTIVE
+    // ============================================================
+
+    const PHISH_EXAMPLES = [
+      {
+        kind: 'url',
+        content: 'https://www.alza.cz/notebook-asus-X515-d7831265.htm',
+        isPhish: false,
+        tell: 'Doména je čistě alza.cz, cesta vede k produktu. Standardní formát Alza URL.',
+      },
+      {
+        kind: 'email',
+        from: 'security@bank0vni-overeni.cz',
+        subject: 'Vaše karta byla POZASTAVENA!!',
+        body: 'Vážený zákazníku, vaše platební karta byla z bezpečnostních důvodů pozastavena. Pro odblokování klikněte ZDE do 24 hodin, jinak bude účet zrušen.',
+        isPhish: true,
+        tell: 'Tři vodítka najednou: nula místo „o" v doméně (bank0vni), tlak na rychlost („do 24 hodin"), výhrůžka zrušením. Žádná česká banka takhle nepíše.',
+      },
+      {
+        kind: 'url',
+        content: 'https://seznam-prihlaseni.cz/login',
+        isPhish: true,
+        tell: 'Skutečné přihlášení k Seznamu vede přes email.seznam.cz. Doména seznam-prihlaseni.cz patří někomu jinému — to „seznam" je jen jméno, které si mohl koupit kdokoli.',
+      },
+      {
+        kind: 'email',
+        from: 'noreply@idos.cz',
+        subject: 'Vaše rezervace — Praha hl.n. → Brno',
+        body: 'Děkujeme za objednávku. Vaše jízdenka na spoj Sp 1545 (odjezd 14:32) je v příloze. Cestu si můžete prohlédnout v aplikaci IDOS.',
+        isPhish: false,
+        tell: 'Doména idos.cz sedí, věcný tón, žádný tlak. Standardní potvrzovací e-mail.',
+      },
+      {
+        kind: 'url',
+        content: 'https://www.alza.com.security-check.shop/login',
+        isPhish: true,
+        tell: 'Klasický trik. Skutečná doména je security-check.shop, ne alza.com. „alza.com" je tu jen subdoména, kterou si majitel security-check.shop nastavil aby tě oklamal.',
+      },
+      {
+        kind: 'email',
+        from: 'česká.pošta@info-zasilky.shop',
+        subject: 'Balík čeká: doplatek 39 Kč',
+        body: 'Vaše zásilka byla zadržena v třídicím centru. Pro doručení doplaťte 39 Kč přes následující odkaz: https://bit.ly/3xY1zP. Po zaplacení bude balík doručen do 24 hodin.',
+        isPhish: true,
+        tell: 'Adresa odesílatele je info-zasilky.shop (ne ceskaposta.cz), zkrácený odkaz bit.ly skrývá cíl, „malá" částka má snížit ostražitost. Skutečná Pošta nikdy neposílá platby přes bit.ly.',
+      },
+      {
+        kind: 'url',
+        content: 'https://mapy.cz/turisticka?x=14.42&y=50.08&z=12',
+        isPhish: false,
+        tell: 'Doména mapy.cz patří Seznamu, parametry x/y/z jsou souřadnice a zoom. Naprosto regulérní.',
+      },
+    ];
+
+    function PhishingDetective() {
+      const [index, setIndex] = useState(0);
+      const [answers, setAnswers] = useState({});
+      const [score, setScore] = useState(0);
+      const [showFinalScreen, setShowFinalScreen] = useState(false);
+
+      const example = PHISH_EXAMPLES[index];
+      const answer = answers[index];
+      const correct = answer != null && ((answer === 'phish') === example.isPhish);
+
+      function pick(choice) {
+        if (answer != null) return;
+        const isCorrect = (choice === 'phish') === example.isPhish;
+        setAnswers({ ...answers, [index]: choice });
+        if (isCorrect) setScore(s => s + 1);
+      }
+
+      function reset() {
+        setIndex(0); setAnswers({}); setScore(0);
+      }
+
+      function nextOrFinish() {
+        if (index < PHISH_EXAMPLES.length - 1) {
+          setIndex(index + 1);
+        } else {
+          setShowFinalScreen(true);
+        }
+      }
+
+      if (showFinalScreen) {
+        const verdict =
+          score === PHISH_EXAMPLES.length ? 'Mistr detektiv. Nic ti neuteklo.' :
+          score >= PHISH_EXAMPLES.length - 1 ? 'Skoro perfektně. Phishing tě nedostane.' :
+          score >= PHISH_EXAMPLES.length / 2 ? 'Slušné. Ale občas pozor — phisheři jsou vychytralí.' :
+          'Pojď si to projít ještě jednou — phisheři se nezastaví.';
+        return html`
+          <div class="phish">
+            <div class="phish-final">
+              <h4>${score} / ${PHISH_EXAMPLES.length}</h4>
+              <p>${verdict}</p>
+              <button class="phish-next" onClick=${() => { reset(); setShowFinalScreen(false); }}>Hrát znovu</button>
+            </div>
+          </div>
+        `;
+      }
+
+      return html`
+        <div class="phish">
+          <div class="phish-bar">
+            <span class="phish-counter">Příklad ${index + 1} / ${PHISH_EXAMPLES.length}</span>
+            <span class="phish-score">Skóre: ${score}</span>
+          </div>
+
+          <div class=${`phish-card ${answer != null ? (correct ? 'correct' : 'wrong') : ''}`}>
+            ${example.kind === 'email' ? html`
+              <p class="phish-kind">E-mail</p>
+              <p class="phish-from">Od: <strong>${example.from}</strong></p>
+              <p class="phish-subject">${example.subject}</p>
+              <p class="phish-body">${example.body}</p>
+            ` : html`
+              <p class="phish-kind">URL adresa</p>
+              <p class="phish-url">${example.content}</p>
+            `}
+          </div>
+
+          ${answer == null ? html`
+            <div class="phish-actions">
+              <button class="phish-btn" onClick=${() => pick('legit')}>Pravé</button>
+              <button class="phish-btn" onClick=${() => pick('phish')}>Podvod</button>
+            </div>
+          ` : html`
+            <div class=${`phish-tell ${correct ? 'correct' : 'wrong'}`}>
+              <strong>${correct ? 'Správně.' : 'Vedle.'}</strong> ${example.tell}
+            </div>
+            <button class="phish-next" onClick=${nextOrFinish}>
+              ${index < PHISH_EXAMPLES.length - 1 ? 'Další →' : 'Zobrazit skóre →'}
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    render(html`<${PhishingDetective} />`, document.getElementById('phish-stage'));
+
+    // ============================================================
+    // 5. QUIZ
+    // ============================================================
+
+    const QUESTIONS = [
+      {
+        q: 'Internet a web jsou:',
+        options: [
+          { label: 'to samé',                                                       correct: false },
+          { label: 'internet je infrastruktura, web je služba nad ní',              correct: true  },
+          { label: 'opačně — web je infrastruktura, internet je služba',            correct: false },
+          { label: 'web je předchůdce internetu',                                   correct: false },
+        ],
+      },
+      {
+        q: 'K čemu slouží DNS?',
+        options: [
+          { label: 'šifruje provoz na internetu',                                   correct: false },
+          { label: 'převádí doménu (jméno) na IP adresu',                           correct: true  },
+          { label: 'urychluje načítání stránek',                                    correct: false },
+          { label: 'blokuje phishingové weby',                                      correct: false },
+        ],
+      },
+      {
+        q: 'V URL https://maps.google.com/path?q=praha je doména…',
+        options: [
+          { label: 'maps',                                                          correct: false },
+          { label: 'google',                                                        correct: true  },
+          { label: 'google.com',                                                    correct: false },
+          { label: 'maps.google.com',                                               correct: false },
+        ],
+      },
+      {
+        q: 'HTTPS zaručuje:',
+        options: [
+          { label: 'důvěryhodný obsah stránky',                                     correct: false },
+          { label: 'šifrovaný přenos mezi tebou a serverem',                        correct: true  },
+          { label: 'pravdivost informací',                                          correct: false },
+          { label: 'ochranu před phishingem',                                       correct: false },
+        ],
+      },
+      {
+        q: 'Které heslo je silnější?',
+        options: [
+          { label: 'Pavel123!',                                                     correct: false },
+          { label: 'cesnek-mraky-rybnik-televize',                                  correct: true  },
+          { label: 'Stejně silná',                                                  correct: false },
+        ],
+      },
+      {
+        q: 'Pakety v síti:',
+        options: [
+          { label: 'putují vždy stejnou cestou',                                    correct: false },
+          { label: 'jsou velké celé soubory',                                       correct: false },
+          { label: 'jsou malé kousky dat, které se na konci složí',                 correct: true  },
+          { label: 'existují jen u e-mailu',                                        correct: false },
+        ],
+      },
+    ];
+
+    function QuizQuestion({ index, q, options }) {
+      const [picked, setPicked] = useState(null);
+      return html`
+        <div class="quiz" style=${{ borderTop: 'none', paddingTop: 0 }}>
+          <p class="quiz-q"><span class="quiz-n">${index}</span> ${q}</p>
+          <ul class="quiz-options">
+            ${options.map((o, i) => {
+              let cls = '';
+              if (picked !== null) {
+                if (o.correct) cls = 'correct';
+                else if (picked === i) cls = 'wrong';
+              }
+              return html`
+                <li>
+                  <button
+                    class=${cls}
+                    disabled=${picked !== null}
+                    onClick=${() => setPicked(i)}
+                  >${o.label}</button>
+                </li>
+              `;
+            })}
+          </ul>
+        </div>
+      `;
+    }
+
+    function Quiz() {
+      return html`
+        <div style=${{ display: 'grid', gap: '32px' }}>
+          ${QUESTIONS.map((q, i) => html`<${QuizQuestion} index=${i + 1} q=${q.q} options=${q.options}/>`)}
+        </div>
+      `;
+    }
+
+    render(html`<${Quiz} />`, document.getElementById('quiz'));
+  </script>
+
+</body>
+</html>
