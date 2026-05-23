@@ -20,17 +20,80 @@
       transform-box: fill-box;
       transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .path-anim-label {
+    .path-checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: var(--space-2);
+    }
+    .path-checklist li {
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
       font-family: var(--font-mono);
       font-size: var(--fs-sm);
-      padding: var(--space-3) var(--space-4);
-      background: var(--paper-dim);
-      border-radius: var(--radius-sm);
-      border-left: 3px solid var(--marker);
-      min-height: 1.5em;
+      transition: background 200ms ease, color 200ms ease;
     }
-    .path-anim-label.done { border-left-color: var(--highlight); }
-    .path-anim-controls { display: flex; gap: var(--space-3); }
+    .path-checklist li.pending { color: var(--ink-faint); }
+    .path-checklist li.pending .check::before { content: '○'; color: var(--ink-faint); }
+    .path-checklist li.active {
+      background: color-mix(in srgb, var(--marker) 14%, var(--paper-dim));
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .path-checklist li.active .check::before { content: '●'; color: var(--marker); font-size: 1.1em; }
+    .path-checklist li.done { color: var(--ink-soft); }
+    .path-checklist li.done .check::before { content: '✓'; color: #2A7B2A; font-weight: 700; }
+    .path-checklist .check {
+      width: 18px;
+      text-align: center;
+      font-size: var(--fs-md);
+    }
+    .path-checklist .data {
+      font-size: var(--fs-xs);
+      color: var(--ink-soft);
+      text-align: right;
+      max-width: 50ch;
+    }
+    .path-checklist li.active .data { color: var(--ink); font-weight: 500; }
+    .path-anim-controls {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .path-step-btn {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: var(--space-2) var(--space-4);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background 100ms ease;
+    }
+    .path-step-btn:hover:not(:disabled) { background: var(--highlight); }
+    .path-step-btn:disabled { opacity: 0.4; cursor: default; }
+    .path-reset {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      color: var(--ink-soft);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      letter-spacing: 0.05em;
+    }
+    .path-reset:hover { color: var(--marker); }
 
     /* ============ URL Anatomy ============ */
     .url-anatomy { display: grid; gap: var(--space-4); }
@@ -277,6 +340,380 @@
       letter-spacing: 0.04em;
       margin: 0;
     }
+
+    /* ============ Vrstvy stránky (HTML/CSS/JS demo) ============ */
+    .vrstvy {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    @media (max-width: 760px) {
+      .vrstvy { grid-template-columns: 1fr; }
+    }
+    .vrstva {
+      display: grid;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: var(--paper);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--ink-faint);
+    }
+    .vrstva-tag {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--marker);
+      margin: 0;
+    }
+    .vrstva-sub {
+      font-family: var(--font-body);
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      margin: 0 0 var(--space-1) 0;
+      color: var(--ink-soft);
+    }
+    .vrstva-demo {
+      padding: var(--space-3);
+      background: var(--paper-dim);
+      border-radius: var(--radius-sm);
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .vrstva-demo-bare {
+      /* Deliberately unstyled — like browser default rendering. */
+      font-family: 'Times New Roman', Times, serif;
+      color: #000;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+    .vrstva-demo-bare h3 { margin: 0 0 6px 0; font-weight: bold; font-size: 1.15em; }
+    .vrstva-demo-bare p { margin: 0 0 6px 0; font-size: 0.95em; }
+    .vrstva-demo-bare button {
+      font: inherit;
+      padding: 1px 6px;
+      align-self: flex-start;
+    }
+    .vrstva-demo-styled h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--fs-md);
+      font-weight: 500;
+      font-variation-settings: 'SOFT' 60, 'opsz' 96;
+      margin: 0 0 var(--space-2) 0;
+      color: var(--ink);
+    }
+    .vrstva-demo-styled p {
+      font-size: var(--fs-xs);
+      color: var(--ink-soft);
+      margin: 0 0 var(--space-3) 0;
+      line-height: 1.45;
+    }
+    .vrstva-demo-styled button {
+      align-self: flex-start;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 100ms ease;
+    }
+    .vrstva-demo-styled button:hover { background: var(--marker); }
+    .vrstva-code {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      background: var(--ink);
+      color: var(--paper);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin: 0;
+      white-space: pre;
+    }
+    .vrstva-code .tok-tag { color: #8ED6E8; }
+    .vrstva-code .tok-attr { color: var(--highlight); }
+    .vrstva-code .tok-str { color: #FFB873; }
+    .vrstva-code .tok-key { color: var(--highlight); }
+
+    /* ============ Top 100 passwords ============ */
+    .top-passwords {
+      margin-top: var(--space-4);
+      border: 1px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--paper-dim);
+      overflow: hidden;
+    }
+    .top-passwords > summary {
+      cursor: pointer;
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      background: var(--paper);
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 100ms ease;
+    }
+    .top-passwords > summary::-webkit-details-marker { display: none; }
+    .top-passwords > summary:hover { background: var(--highlight); }
+    .top-passwords[open] > summary { background: var(--ink); color: var(--paper); }
+    .top-passwords > summary::after {
+      content: '+';
+      font-size: 1.4em;
+      font-weight: 400;
+      margin-left: var(--space-3);
+      transition: transform 150ms ease;
+    }
+    .top-passwords[open] > summary::after { content: '−'; }
+    .top-passwords-body {
+      padding: var(--space-4) var(--space-5);
+    }
+    .top-passwords-body p {
+      margin: 0 0 var(--space-4) 0;
+      font-size: var(--fs-sm);
+      font-family: var(--font-body);
+      color: var(--ink-soft);
+      max-width: 56ch;
+    }
+    .top-passwords-body p strong { color: var(--ink); }
+    .top-passwords-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0 var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      counter-reset: pwd;
+    }
+    .top-passwords-list li {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: var(--space-2);
+      align-items: baseline;
+      padding: 4px 0;
+      counter-increment: pwd;
+      border-bottom: 1px dotted color-mix(in srgb, var(--ink-faint) 60%, transparent);
+    }
+    .top-passwords-list li::before {
+      content: counter(pwd) '.';
+      color: var(--ink-faint);
+      text-align: right;
+      font-size: 0.85em;
+    }
+
+    /* ============ Tracker / cookies challenge ============ */
+    .challenge {
+      margin-top: var(--space-6);
+      border: 2px solid var(--marker);
+      border-radius: var(--radius);
+      background: var(--paper-dim);
+      overflow: hidden;
+    }
+    .challenge > summary {
+      cursor: pointer;
+      padding: var(--space-4) var(--space-5);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: var(--fs-lg);
+      font-weight: 500;
+      font-variation-settings: 'SOFT' 60, 'opsz' 96;
+      background: var(--paper);
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 120ms ease;
+    }
+    .challenge > summary::-webkit-details-marker { display: none; }
+    .challenge > summary::before {
+      content: '⚡';
+      margin-right: var(--space-3);
+      font-style: normal;
+      color: var(--marker);
+    }
+    .challenge > summary:hover { background: var(--highlight); }
+    .challenge[open] > summary {
+      background: var(--marker);
+      color: var(--paper);
+      border-bottom: 2px solid var(--ink);
+    }
+    .challenge[open] > summary::before { color: var(--paper); }
+    .challenge > summary::after {
+      content: '+';
+      font-family: var(--font-mono);
+      font-size: 1.6em;
+      font-style: normal;
+      font-weight: 400;
+    }
+    .challenge[open] > summary::after { content: '−'; }
+    .challenge-body {
+      padding: var(--space-5);
+    }
+
+    .tracker-demo {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-4);
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .tracker-demo { grid-template-columns: 1fr; }
+    }
+    .tracker-sites h4, .tracker-panel h4 {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 var(--space-3) 0;
+      color: var(--ink-soft);
+    }
+    .tracker-site-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+    }
+    .tracker-site {
+      display: grid;
+      gap: 2px;
+      padding: var(--space-3);
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: background 100ms ease, transform 80ms ease;
+    }
+    .tracker-site:hover:not(:disabled) { background: var(--highlight); transform: translateY(-1px); }
+    .tracker-site.visited { background: var(--paper-dim); opacity: 0.6; cursor: default; }
+    .tracker-site-name {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: var(--fs-sm);
+      color: var(--ink);
+    }
+    .tracker-site-desc {
+      font-size: var(--fs-xs);
+      color: var(--ink-soft);
+    }
+    .tracker-site-tags {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-top: 2px;
+    }
+    .tracker-site-check {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      color: #2A7B2A;
+      font-weight: 700;
+      font-size: var(--fs-md);
+    }
+
+    .tracker-panel {
+      background: var(--ink);
+      color: var(--paper);
+      padding: var(--space-4);
+      border-radius: var(--radius);
+      display: grid;
+      gap: var(--space-3);
+      align-content: start;
+    }
+    .tracker-panel h4 { color: var(--highlight); margin: 0 0 var(--space-1) 0; }
+    .tracker-stat {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
+    }
+    .tracker-stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: color-mix(in srgb, var(--paper) 60%, transparent);
+    }
+    .tracker-stat-val { color: var(--paper); font-weight: 700; }
+    .tracker-tags { display: grid; gap: var(--space-2); padding-bottom: var(--space-2); border-bottom: 1px solid color-mix(in srgb, var(--paper) 18%, transparent); }
+    .tracker-tags-list { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tracker-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      background: var(--marker);
+      color: var(--paper);
+      border-radius: 3px;
+    }
+    .tracker-empty {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      color: color-mix(in srgb, var(--paper) 45%, transparent);
+      font-style: italic;
+    }
+    .tracker-profile { display: grid; gap: var(--space-2); }
+    .tracker-profile p {
+      margin: 0;
+      font-size: var(--fs-sm);
+      color: var(--highlight);
+      font-weight: 500;
+      max-width: none;
+    }
+    .tracker-profile ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 2px;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+    }
+    .tracker-profile ul li {
+      padding: 4px 8px;
+      background: color-mix(in srgb, var(--paper) 8%, transparent);
+      border-radius: 3px;
+    }
+    .tracker-profile ul li::before { content: '→ '; color: var(--marker); }
+    .tracker-reset {
+      margin-top: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: none;
+      border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+      border-radius: var(--radius-sm);
+      padding: var(--space-2) var(--space-3);
+      cursor: pointer;
+      justify-self: start;
+      transition: background 100ms ease;
+    }
+    .tracker-reset:hover {
+      background: var(--marker);
+      border-color: var(--marker);
+    }
   </style>
 </head>
 <body>
@@ -471,6 +908,16 @@
         </p>
       </aside>
 
+      <figure class="widget">
+        <p class="widget-tag">Vrstvy stránky · od&nbsp;kostry po&nbsp;chování</p>
+        <div class="widget-stage" id="vrstvy-stage"></div>
+        <figcaption class="widget-hint">
+          Stejný kus stránky ve&nbsp;třech vrstvách. Vlevo holé HTML jak ho prohlížeč
+          ukáže bez stylů. Uprostřed přibyly barvy a&nbsp;písmo. Vpravo už tlačítko
+          opravdu reaguje — zkus na&nbsp;něj kliknout.
+        </figcaption>
+      </figure>
+
       <h3>Statický × dynamický web</h3>
       <p>
         <strong>Statický web</strong> = server pošle všem stejnou hotovou stránku.
@@ -538,6 +985,124 @@
         </figcaption>
       </figure>
 
+      <details class="top-passwords">
+        <summary>
+          <span>100 nejčastějších hesel — co útočník zkusí jako první</span>
+        </summary>
+        <div class="top-passwords-body">
+          <p>
+            Útočníci nezkouší náhodné kombinace písmen — začínají touhle stovkou
+            (a&nbsp;jejich variantami typu <code>password1</code>, <code>Password!</code>, <code>password2024</code>).
+            Pokud máš jakékoliv z&nbsp;těchto hesel, <strong>změň ho hned</strong>.
+          </p>
+          <ol class="top-passwords-list">
+            <li>123456</li>
+            <li>password</li>
+            <li>heslo</li>
+            <li>123456789</li>
+            <li>12345</li>
+            <li>12345678</li>
+            <li>qwerty</li>
+            <li>1234567</li>
+            <li>111111</li>
+            <li>1234567890</li>
+            <li>123123</li>
+            <li>000000</li>
+            <li>iloveyou</li>
+            <li>abc123</li>
+            <li>dragon</li>
+            <li>heslo123</li>
+            <li>football</li>
+            <li>monkey</li>
+            <li>letmein</li>
+            <li>shadow</li>
+            <li>master</li>
+            <li>666666</li>
+            <li>qwertyuiop</li>
+            <li>123321</li>
+            <li>mustang</li>
+            <li>michael</li>
+            <li>654321</li>
+            <li>superman</li>
+            <li>1qaz2wsx</li>
+            <li>7777777</li>
+            <li>121212</li>
+            <li>qazwsx</li>
+            <li>123qwe</li>
+            <li>fotbal</li>
+            <li>killer</li>
+            <li>trustno1</li>
+            <li>ahoj</li>
+            <li>jordan</li>
+            <li>jennifer</li>
+            <li>zxcvbnm</li>
+            <li>asdfgh</li>
+            <li>hunter</li>
+            <li>buster</li>
+            <li>soccer</li>
+            <li>harley</li>
+            <li>batman</li>
+            <li>andrew</li>
+            <li>tigger</li>
+            <li>sunshine</li>
+            <li>anna</li>
+            <li>love</li>
+            <li>2000</li>
+            <li>charlie</li>
+            <li>robert</li>
+            <li>thomas</li>
+            <li>hockey</li>
+            <li>ranger</li>
+            <li>daniel</li>
+            <li>starwars</li>
+            <li>computer</li>
+            <li>112233</li>
+            <li>george</li>
+            <li>michelle</li>
+            <li>jessica</li>
+            <li>praha</li>
+            <li>pavel</li>
+            <li>pepper</li>
+            <li>1111</li>
+            <li>zxcvbn</li>
+            <li>555555</li>
+            <li>11111111</li>
+            <li>131313</li>
+            <li>freedom</li>
+            <li>777777</li>
+            <li>pass</li>
+            <li>martin</li>
+            <li>maggie</li>
+            <li>159753</li>
+            <li>aaaaaa</li>
+            <li>ginger</li>
+            <li>princess</li>
+            <li>joshua</li>
+            <li>cheese</li>
+            <li>amanda</li>
+            <li>summer</li>
+            <li>ashley</li>
+            <li>jana</li>
+            <li>nicole</li>
+            <li>chelsea</li>
+            <li>lucka</li>
+            <li>matthew</li>
+            <li>access</li>
+            <li>yankees</li>
+            <li>987654321</li>
+            <li>dallas</li>
+            <li>austin</li>
+            <li>thunder</li>
+            <li>taylor</li>
+            <li>matrix</li>
+            <li>minecraft</li>
+            <li>brno</li>
+            <li>kralik</li>
+            <li>slunicko</li>
+          </ol>
+        </div>
+      </details>
+
       <aside class="callout callout--remember">
         <p class="callout-tag">Pamatuj</p>
         <p>
@@ -587,6 +1152,19 @@
         screenshot, v&nbsp;cache vyhledávače nebo v&nbsp;archivu (Wayback Machine).
         Než něco vystavíš, představ si, že to po&nbsp;deseti letech čte tvůj zaměstnavatel.
       </p>
+
+      <details class="challenge">
+        <summary>Výzva: postav svůj reklamní profil</summary>
+        <div class="challenge-body">
+          <p style="font-size: var(--fs-sm); color: var(--ink-soft); margin: 0 0 var(--space-4) 0; max-width: 56ch;">
+            Klikni na&nbsp;pár webů, jako bys jimi prošel během dne. Reklamní systém si do&nbsp;tvého
+            prohlížeče uloží <strong>sledovací cookie</strong> z&nbsp;každého z&nbsp;nich. Sleduj
+            vpravo, jak se mu z&nbsp;tvého chování pomalu skládá profil — a&nbsp;jaké reklamy by ti
+            začal servírovat.
+          </p>
+          <div id="tracker-stage"></div>
+        </div>
+      </details>
     </section>
 
     <!-- ====================================================== -->
@@ -626,85 +1204,137 @@
     // ============================================================
 
     function PathAnimation() {
-      const [step, setStep] = useState(0);
-
-      const browser = [80, 150];
-      const dns     = [300, 60];
-      const server  = [520, 150];
-
       const STEPS = [
-        { pos: browser, label: 'Klikni „Spustit cestu" pro start.', tone: 'idle' },
-        { pos: dns,     label: '1. Prohlížeč → DNS: „Kde najdu cs.wikipedia.org?"', tone: 'run' },
-        { pos: browser, label: '2. DNS → Prohlížeč: „IP je 208.80.154.224"', tone: 'run' },
-        { pos: server,  label: '3. Prohlížeč → Server: „GET /wiki/Praha" (přes HTTPS)', tone: 'run' },
-        { pos: browser, label: '4. Server → Prohlížeč: HTML obsah stránky', tone: 'run' },
-        { pos: server,  label: '5. Prohlížeč → Server: „Pošli ještě CSS, JS, obrázky"', tone: 'run' },
-        { pos: browser, label: '6. Server → Prohlížeč: Tady jsou všechny zdroje.', tone: 'run' },
-        { pos: browser, label: '✓ Prohlížeč vykresluje stránku. Hotovo.', tone: 'done' },
+        { from: 'browser', to: 'dns',     data: 'IP pro cs.wikipedia.org?', title: 'DNS dotaz' },
+        { from: 'dns',     to: 'browser', data: '208.80.154.224',           title: 'IP odpověď' },
+        { from: 'browser', to: 'server',  data: 'GET /wiki/Praha (HTTPS)',  title: 'Požadavek na stránku' },
+        { from: 'server',  to: 'browser', data: '<html>…</html>',           title: 'HTML odpověď' },
+        { from: 'browser', to: 'server',  data: 'CSS, JS, obrázky?',        title: 'Další zdroje' },
+        { from: 'server',  to: 'browser', data: 'všechny soubory',          title: 'Doručeno, vykresluju' },
       ];
 
+      const POS = {
+        browser: [80, 180],
+        dns:     [300, 80],
+        server:  [520, 180],
+      };
+
+      const [step, setStep] = useState(-1);
+      const [phase, setPhase] = useState('to');
+      const [playing, setPlaying] = useState(false);
+
+      // On step change, briefly position at "from" then animate to "to".
       useEffect(() => {
-        if (step > 0 && step < STEPS.length - 1) {
-          const t = setTimeout(() => setStep(step + 1), 1800);
-          return () => clearTimeout(t);
-        }
+        if (step < 0 || step >= STEPS.length) return;
+        setPhase('from');
+        const t = setTimeout(() => setPhase('to'), 80);
+        return () => clearTimeout(t);
       }, [step]);
 
-      const current = STEPS[step];
-      const packetColor = current.tone === 'done' ? 'var(--highlight)' : 'var(--marker)';
+      // Auto-advance while playing
+      useEffect(() => {
+        if (!playing || phase !== 'to' || step < 0) return;
+        if (step < STEPS.length - 1) {
+          const t = setTimeout(() => setStep(step + 1), 1700);
+          return () => clearTimeout(t);
+        }
+        if (step === STEPS.length - 1) {
+          const t = setTimeout(() => { setStep(STEPS.length); setPlaying(false); }, 1500);
+          return () => clearTimeout(t);
+        }
+      }, [playing, phase, step]);
+
+      function start()   { setStep(0); setPlaying(true); }
+      function prev()    { setPlaying(false); if (step === STEPS.length) setStep(STEPS.length - 1); else if (step > 0) setStep(step - 1); }
+      function next()    { setPlaying(false); if (step < 0) setStep(0); else if (step < STEPS.length - 1) setStep(step + 1); else if (step === STEPS.length - 1) setStep(STEPS.length); }
+      function togglePlay() { if (step < 0 || step >= STEPS.length) start(); else setPlaying(p => !p); }
+      function reset()   { setPlaying(false); setStep(-1); }
+
+      const isInStep   = step >= 0 && step < STEPS.length;
+      const isDone     = step === STEPS.length;
+      const currentStep = isInStep ? STEPS[step] : null;
+      const packetPos  = currentStep ? POS[phase === 'from' ? currentStep.from : currentStep.to] : null;
+      const packetData = currentStep ? currentStep.data : '';
 
       return html`
         <div class="path-anim">
-          <svg viewBox="0 0 600 240" role="img" aria-label="Animace cesty požadavku">
+          <svg viewBox="0 0 600 290" role="img" aria-label="Animace cesty požadavku">
             <!-- connection guides -->
-            <line x1=${browser[0] + 26} y1=${browser[1] - 14} x2=${dns[0] - 24} y2=${dns[1] + 16} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
-            <line x1=${dns[0] + 24}     y1=${dns[1] + 16}     x2=${server[0] - 26} y2=${server[1] - 14} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
-            <line x1=${browser[0] + 26} y1=${browser[1]}      x2=${server[0] - 26} y2=${server[1]}      stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
+            <line x1=${POS.browser[0] + 26} y1=${POS.browser[1] - 14} x2=${POS.dns[0] - 24} y2=${POS.dns[1] + 16} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
+            <line x1=${POS.dns[0] + 24}     y1=${POS.dns[1] + 16}     x2=${POS.server[0] - 26} y2=${POS.server[1] - 14} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
+            <line x1=${POS.browser[0] + 26} y1=${POS.browser[1]}      x2=${POS.server[0] - 26} y2=${POS.server[1]}      stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 5" opacity="0.4"/>
 
-            <!-- Browser icon -->
-            <g transform=${`translate(${browser[0]}, ${browser[1]})`}>
+            <!-- Browser -->
+            <g transform=${`translate(${POS.browser[0]}, ${POS.browser[1]})`}>
               <rect x="-26" y="-22" width="52" height="40" rx="3" fill="var(--paper-dim)" stroke="var(--ink)" stroke-width="1.5"/>
               <line x1="-26" y1="-11" x2="26" y2="-11" stroke="var(--ink)" stroke-width="1.5"/>
               <circle cx="-19" cy="-17" r="2" fill="var(--marker)"/>
               <circle cx="-13" cy="-17" r="2" fill="#E89E3D"/>
               <circle cx="-7"  cy="-17" r="2" fill="#5E9E3D"/>
             </g>
-            <text x=${browser[0]} y=${browser[1] + 38} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">prohlížeč</text>
+            <text x=${POS.browser[0]} y=${POS.browser[1] + 38} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">prohlížeč</text>
 
-            <!-- DNS icon -->
-            <g transform=${`translate(${dns[0]}, ${dns[1]})`}>
+            <!-- DNS -->
+            <g transform=${`translate(${POS.dns[0]}, ${POS.dns[1]})`}>
               <rect x="-24" y="-20" width="48" height="36" rx="2" fill="var(--paper-dim)" stroke="var(--ink)" stroke-width="1.5"/>
               <line x1="-16" y1="-10" x2="16" y2="-10" stroke="var(--ink)" stroke-width="1"/>
               <line x1="-16" y1="-3"  x2="16" y2="-3"  stroke="var(--ink)" stroke-width="1"/>
               <line x1="-16" y1="4"   x2="16" y2="4"   stroke="var(--ink)" stroke-width="1"/>
               <line x1="-16" y1="11"  x2="16" y2="11"  stroke="var(--ink)" stroke-width="1"/>
             </g>
-            <text x=${dns[0]} y=${dns[1] + 36} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">DNS server</text>
+            <text x=${POS.dns[0]} y=${POS.dns[1] + 36} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">DNS server</text>
 
-            <!-- Web server icon -->
-            <g transform=${`translate(${server[0]}, ${server[1]})`}>
+            <!-- Web server -->
+            <g transform=${`translate(${POS.server[0]}, ${POS.server[1]})`}>
               <rect x="-24" y="-20" width="48" height="36" rx="2" fill="var(--paper-dim)" stroke="var(--ink)" stroke-width="1.5"/>
               <line x1="-16" y1="-10" x2="16" y2="-10" stroke="var(--ink)" stroke-width="1"/>
               <line x1="-16" y1="-3"  x2="16" y2="-3"  stroke="var(--ink)" stroke-width="1"/>
               <line x1="-16" y1="4"   x2="16" y2="4"   stroke="var(--ink)" stroke-width="1"/>
               <circle cx="-14" cy="11" r="2" fill="#5E9E3D"/>
             </g>
-            <text x=${server[0]} y=${server[1] + 38} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">web server</text>
+            <text x=${POS.server[0]} y=${POS.server[1] + 38} font-size="11" text-anchor="middle" fill="var(--ink)" font-family="JetBrains Mono">web server</text>
 
-            <!-- Packet -->
-            ${step > 0 && html`
-              <g class="path-packet" style=${`transform: translate(${current.pos[0]}px, ${current.pos[1]}px);`}>
-                <circle r="11" fill=${packetColor} stroke="var(--ink)" stroke-width="1.5"/>
+            <!-- Packet with data label riding on it -->
+            ${packetPos && html`
+              <g class="path-packet" style=${`transform: translate(${packetPos[0]}px, ${packetPos[1]}px);`}>
+                <g transform="translate(0, -48)">
+                  <rect x="-90" y="-13" width="180" height="22" rx="11" fill="var(--ink)"/>
+                  <text x="0" y="3" text-anchor="middle" font-size="11" fill="var(--paper)" font-family="JetBrains Mono">${packetData}</text>
+                </g>
+                <circle r="11" fill="var(--marker)" stroke="var(--ink)" stroke-width="1.5"/>
               </g>
             `}
           </svg>
 
-          <div class=${`path-anim-label ${current.tone === 'done' ? 'done' : ''}`}>${current.label}</div>
+          <ol class="path-checklist">
+            ${STEPS.map((s, i) => {
+              let cls = 'pending';
+              if (isDone || i < step) cls = 'done';
+              else if (i === step) cls = 'active';
+              return html`
+                <li class=${cls}>
+                  <span class="check"></span>
+                  <span class="title">${i + 1}. ${s.title}</span>
+                  <span class="data">${(i === step || (isDone && i === STEPS.length - 1)) ? s.data : ''}</span>
+                </li>
+              `;
+            })}
+            ${isDone && html`
+              <li class="done">
+                <span class="check"></span>
+                <span class="title">Stránka vykreslena.</span>
+                <span class="data"></span>
+              </li>
+            `}
+          </ol>
 
           <div class="path-anim-controls">
-            <button class="open-interactive" onClick=${() => setStep(step === 0 ? 1 : 0)}>
-              ${step === 0 ? 'Spustit cestu →' : 'Spustit znovu'}
+            <button class="path-step-btn" onClick=${prev} disabled=${step < 1 && !isDone}>← Předchozí</button>
+            <button class="open-interactive" onClick=${togglePlay}>
+              ${step < 0 ? 'Spustit cestu →' : isDone ? 'Spustit znovu' : playing ? 'Pozastavit' : 'Pokračovat'}
             </button>
+            <button class="path-step-btn" onClick=${next} disabled=${isDone}>Další →</button>
+            ${step >= 0 && html`<button class="path-reset" onClick=${reset}>Reset</button>`}
           </div>
         </div>
       `;
@@ -790,10 +1420,10 @@
 
           <div class="url-tip">
             Skutečný majitel webu je ten, kdo vlastní <code>${parts.domain}${parts.tld}</code>.
-            Subdoménu (vlevo) si může pojmenovat jakkoliv — i&nbsp;jako <code>alza</code> nebo <code>seznam</code>.
+            Subdoménu (vlevo) si může pojmenovat jakkoliv — i${NBSP}jako <code>alza</code> nebo <code>seznam</code>.
             ${parts.domain && parts.tld && (
               ['shop-cz', 'security-check', 'login-cz', 'overeni', 'bank0vni'].some(s => parts.domain.includes(s))
-              || /\d/.test(parts.domain) && parts.domain.length < 12
+              || (/\d/.test(parts.domain) && parts.domain.length < 12)
             ) ? html`<br/><strong style=${{ color: 'var(--marker)' }}>Tohle vypadá podezřele.</strong> Jméno domény má nezvyklý tvar — podívej se ještě jednou, jestli sedí.` : null}
           </div>
         </div>
@@ -1144,6 +1774,174 @@
     }
 
     render(html`<${Quiz} />`, document.getElementById('quiz'));
+
+    // ============================================================
+    // 6. VRSTVY (HTML / CSS / JS layers demo)
+    // ============================================================
+
+    function VrstvyDemo() {
+      const [clicks, setClicks] = useState(0);
+      const message =
+        clicks === 0 ? 'Vítej. Klikni pro pozdrav.' :
+        clicks === 1 ? 'Ahoj!' :
+        `Pozdraveno ${clicks}×.`;
+
+      return html`
+        <div class="vrstvy">
+          <div class="vrstva">
+            <p class="vrstva-tag">HTML</p>
+            <p class="vrstva-sub">Jen kostra — text, nadpis, tlačítko.</p>
+            <div class="vrstva-demo vrstva-demo-bare">
+              <h3>Stránka třídy 9.${NBSP}A</h3>
+              <p>Vítej. Klikni pro pozdrav.</p>
+              <button type="button">Pozdrav</button>
+            </div>
+            <pre class="vrstva-code">${'<h3>Stránka třídy 9. A</h3>\n<p>Vítej…</p>\n<button>Pozdrav</button>'}</pre>
+          </div>
+
+          <div class="vrstva">
+            <p class="vrstva-tag">+ CSS</p>
+            <p class="vrstva-sub">Přidáme vzhled — barvy, písmo, mezery.</p>
+            <div class="vrstva-demo vrstva-demo-styled">
+              <h3>Stránka třídy 9.${NBSP}A</h3>
+              <p>Vítej. Klikni pro pozdrav.</p>
+              <button type="button">Pozdrav</button>
+            </div>
+            <pre class="vrstva-code">${'h3 { font-family: serif; }\nbutton {\n  background: navy;\n  color: white;\n  padding: 6px 14px;\n}'}</pre>
+          </div>
+
+          <div class="vrstva">
+            <p class="vrstva-tag">+ JavaScript</p>
+            <p class="vrstva-sub">Konečně chování — tlačítko reaguje.</p>
+            <div class="vrstva-demo vrstva-demo-styled">
+              <h3>Stránka třídy 9.${NBSP}A</h3>
+              <p>${message}</p>
+              <button type="button" onClick=${() => setClicks(c => c + 1)}>Pozdrav</button>
+            </div>
+            <pre class="vrstva-code">${"button.onclick = () => {\n  count += 1;\n  text = 'Ahoj!';\n};"}</pre>
+          </div>
+        </div>
+      `;
+    }
+
+    render(html`<${VrstvyDemo} />`, document.getElementById('vrstvy-stage'));
+
+    // ============================================================
+    // 7. TRACKER / COOKIES PROFIL
+    // ============================================================
+
+    const TRACKER_SITES = [
+      { id: 'shoes',   name: 'Botas24.cz',     desc: 'E-shop s běžeckými botami',  tags: ['móda', 'sport']      },
+      { id: 'news',    name: 'iZprávy.cz',     desc: 'Zpravodajský portál',        tags: ['zprávy']             },
+      { id: 'sport',   name: 'Sport24.cz',     desc: 'Hokej, fotbal, výsledky',    tags: ['sport']              },
+      { id: 'recipes', name: 'Recepty.cz',     desc: 'Vaření, koláče, večeře',     tags: ['jídlo']              },
+      { id: 'games',   name: 'GameZone',       desc: 'Recenze her, hardware',      tags: ['hry', 'technologie'] },
+      { id: 'travel',  name: 'Cestovani.cz',   desc: 'Letenky, hotely, dovolená',  tags: ['cestování']          },
+    ];
+
+    function profileFor(tags) {
+      if (tags.length < 3) return null;
+      if (tags.includes('sport') && tags.includes('hry')) {
+        return {
+          profile: 'Aktivní teenager / mladý dospělý, sport + technologie',
+          ads: ['Sleva 30 % na běžecké boty', 'Herní notebook za 24 990 Kč', 'Sportovní hodinky Garmin'],
+        };
+      }
+      if (tags.includes('cestování') && tags.includes('jídlo')) {
+        return {
+          profile: 'Cestovatel / gurmán, 25–40 let',
+          ads: ['Letenka do Itálie −30 %', 'Kurz vaření v Toskánsku', 'All-inclusive Chorvatsko'],
+        };
+      }
+      if (tags.includes('zprávy') && tags.includes('technologie')) {
+        return {
+          profile: 'Tech-savvy čtenář zpráv, 20–45 let',
+          ads: ['Předplatné iZpráv Premium', 'Nový iPhone na splátky', 'Cloudové úložiště 1 TB'],
+        };
+      }
+      if (tags.includes('móda') && tags.includes('sport')) {
+        return {
+          profile: 'Sportovec se smyslem pro vzhled, 18–35 let',
+          ads: ['Limitovaná kolekce Adidas', 'Fitness centrum poblíž', 'Sportovní oblečení −40 %'],
+        };
+      }
+      return {
+        profile: `Profil podle zájmů: ${tags.join(', ')}`,
+        ads: tags.slice(0, 3).map(t => `Reklamy v kategorii: ${t}`),
+      };
+    }
+
+    function TrackerDemo() {
+      const [visited, setVisited] = useState([]);
+
+      function visit(id) {
+        if (visited.includes(id)) return;
+        setVisited([...visited, id]);
+      }
+      function reset() { setVisited([]); }
+
+      const tags = [];
+      const seen = new Set();
+      visited.forEach(id => {
+        const s = TRACKER_SITES.find(x => x.id === id);
+        if (!s) return;
+        s.tags.forEach(t => { if (!seen.has(t)) { seen.add(t); tags.push(t); } });
+      });
+
+      const prof = profileFor(tags);
+
+      return html`
+        <div class="tracker-demo">
+          <div class="tracker-sites">
+            <h4>Klikni, jako bys procházel weby</h4>
+            <div class="tracker-site-grid">
+              ${TRACKER_SITES.map(s => html`
+                <button
+                  class=${`tracker-site ${visited.includes(s.id) ? 'visited' : ''}`}
+                  onClick=${() => visit(s.id)}
+                  disabled=${visited.includes(s.id)}
+                >
+                  <span class="tracker-site-name">${s.name}</span>
+                  <span class="tracker-site-desc">${s.desc}</span>
+                  <span class="tracker-site-tags">${s.tags.join(' · ')}</span>
+                  ${visited.includes(s.id) && html`<span class="tracker-site-check">✓</span>`}
+                </button>
+              `)}
+            </div>
+          </div>
+
+          <aside class="tracker-panel">
+            <h4>Reklamní systém o tobě ví</h4>
+            <div class="tracker-stat">
+              <span class="tracker-stat-label">Cookies uložené</span>
+              <span class="tracker-stat-val">${visited.length}× 3rd-party</span>
+            </div>
+            <div class="tracker-stat">
+              <span class="tracker-stat-label">Navštíveno webů</span>
+              <span class="tracker-stat-val">${visited.length} / ${TRACKER_SITES.length}</span>
+            </div>
+            <div class="tracker-tags">
+              <span class="tracker-stat-label">Sledované zájmy</span>
+              ${tags.length === 0
+                ? html`<span class="tracker-empty">žádné — zatím</span>`
+                : html`<div class="tracker-tags-list">${tags.map(t => html`<span class="tracker-tag">${t}</span>`)}</div>`
+              }
+            </div>
+            ${prof && html`
+              <div class="tracker-profile">
+                <span class="tracker-stat-label">Předpověď</span>
+                <p>${prof.profile}</p>
+                <span class="tracker-stat-label">Reklamy, které ti začne servírovat</span>
+                <ul>${prof.ads.map(a => html`<li>${a}</li>`)}</ul>
+              </div>
+            `}
+            <button class="tracker-reset" onClick=${reset}>Smazat cookies a začít znovu</button>
+          </aside>
+        </div>
+      `;
+    }
+
+    render(html`<${TrackerDemo} />`, document.getElementById('tracker-stage'));
   </script>
 
 </body>
