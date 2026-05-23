@@ -1205,6 +1205,7 @@
 
     function PathAnimation() {
       const STEPS = [
+        { from: 'browser', to: 'browser', data: 'cs.wikipedia.org ⏎',       title: 'Napíšeš adresu a stiskneš Enter' },
         { from: 'browser', to: 'dns',     data: 'IP pro cs.wikipedia.org?', title: 'DNS dotaz' },
         { from: 'dns',     to: 'browser', data: '208.80.154.224',           title: 'IP odpověď' },
         { from: 'browser', to: 'server',  data: 'GET /wiki/Praha (HTTPS)',  title: 'Požadavek na stránku' },
@@ -1221,7 +1222,6 @@
 
       const [step, setStep] = useState(-1);
       const [phase, setPhase] = useState('to');
-      const [playing, setPlaying] = useState(false);
 
       // On step change, briefly position at "from" then animate to "to".
       useEffect(() => {
@@ -1231,24 +1231,16 @@
         return () => clearTimeout(t);
       }, [step]);
 
-      // Auto-advance while playing
-      useEffect(() => {
-        if (!playing || phase !== 'to' || step < 0) return;
-        if (step < STEPS.length - 1) {
-          const t = setTimeout(() => setStep(step + 1), 1700);
-          return () => clearTimeout(t);
-        }
-        if (step === STEPS.length - 1) {
-          const t = setTimeout(() => { setStep(STEPS.length); setPlaying(false); }, 1500);
-          return () => clearTimeout(t);
-        }
-      }, [playing, phase, step]);
+      function next() {
+        if (step < 0)                        setStep(0);
+        else if (step < STEPS.length - 1)    setStep(step + 1);
+        else if (step === STEPS.length - 1)  setStep(STEPS.length);
+        else                                 setStep(0); // "Spustit znovu" after done
+      }
 
-      function start()   { setStep(0); setPlaying(true); }
-      function prev()    { setPlaying(false); if (step === STEPS.length) setStep(STEPS.length - 1); else if (step > 0) setStep(step - 1); }
-      function next()    { setPlaying(false); if (step < 0) setStep(0); else if (step < STEPS.length - 1) setStep(step + 1); else if (step === STEPS.length - 1) setStep(STEPS.length); }
-      function togglePlay() { if (step < 0 || step >= STEPS.length) start(); else setPlaying(p => !p); }
-      function reset()   { setPlaying(false); setStep(-1); }
+      function reset() {
+        setStep(-1);
+      }
 
       const isInStep   = step >= 0 && step < STEPS.length;
       const isDone     = step === STEPS.length;
@@ -1329,11 +1321,9 @@
           </ol>
 
           <div class="path-anim-controls">
-            <button class="path-step-btn" onClick=${prev} disabled=${step < 1 && !isDone}>← Předchozí</button>
-            <button class="open-interactive" onClick=${togglePlay}>
-              ${step < 0 ? 'Spustit cestu →' : isDone ? 'Spustit znovu' : playing ? 'Pozastavit' : 'Pokračovat'}
+            <button class="open-interactive" onClick=${next}>
+              ${step < 0 ? 'Spustit cestu →' : isDone ? 'Spustit znovu' : 'Další krok →'}
             </button>
-            <button class="path-step-btn" onClick=${next} disabled=${isDone}>Další →</button>
             ${step >= 0 && html`<button class="path-reset" onClick=${reset}>Reset</button>`}
           </div>
         </div>
