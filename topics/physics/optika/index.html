@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Optika — světlo, lom a zrcadla · Sešity</title>
+  <meta name="description" content="Interaktivní výklad: co je světlo, proč se láme a jak vzniká obraz v zrcadle. Spektrum, Snellův zákon, zrcadla.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../../../assets/style.css">
+
+  <style>
+    /* Lesson-local styling — only what's specific to this lesson's widgets. */
+
+    /* Spektrum widget */
+    .spektrum { display: grid; gap: var(--space-4); }
+    .spektrum-strip {
+      width: 100%; height: 56px;
+      border-radius: var(--radius);
+      background: linear-gradient(
+        to right,
+        #5d5d5d 0%, #5d5d5d 12.5%,
+        #8b00ff 18.75%, #4b0082 22%,
+        #0000ff 28%, #00ff00 42%,
+        #ffff00 55%, #ff7f00 62%, #ff0000 70%,
+        #6e1f1f 78%, #5d5d5d 81.25%, #5d5d5d 100%
+      );
+      position: relative;
+      border: 1.5px solid var(--ink);
+    }
+    .spektrum-marker {
+      position: absolute;
+      top: -6px; bottom: -6px;
+      width: 4px;
+      background: var(--ink);
+      border-radius: 2px;
+      transform: translateX(-2px);
+      transition: left 60ms linear;
+    }
+    .spektrum-marker::after {
+      content: '';
+      position: absolute;
+      top: -8px; left: 50%;
+      width: 0; height: 0;
+      border: 6px solid transparent;
+      border-top-color: var(--ink);
+      transform: translateX(-50%);
+    }
+    .spektrum-readout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+      font-family: var(--font-mono);
+    }
+    .spektrum-readout > div { display: grid; gap: var(--space-1); }
+    .spektrum-readout dt {
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+    }
+    .spektrum-readout dd {
+      margin: 0;
+      font-size: var(--fs-lg);
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .spektrum-readout .swatch {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: var(--space-2);
+    }
+    .spektrum-band {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      color: var(--ink-soft);
+      letter-spacing: 0.05em;
+    }
+    .spektrum-band strong { color: var(--ink); }
+    .spektrum input[type=range] { width: 100%; }
+
+    /* Snell widget */
+    .snell {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-5);
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .snell { grid-template-columns: 1fr; }
+    }
+    .snell svg {
+      width: 100%; height: auto;
+      background: var(--paper);
+      border-radius: var(--radius-sm);
+    }
+    .snell-controls { display: grid; gap: var(--space-4); }
+    .snell-row { display: grid; gap: var(--space-1); }
+    .snell-row label {
+      font-family: var(--font-mono);
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+    }
+    .snell-row select, .snell-row input[type=range] {
+      font-family: var(--font-mono);
+      font-size: var(--fs-sm);
+      padding: var(--space-2) var(--space-3);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .snell-row input[type=range] { padding: 0; }
+    .snell-readout {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      padding: var(--space-3) var(--space-4);
+      background: var(--paper-dim);
+      border-radius: var(--radius-sm);
+      display: grid;
+      gap: var(--space-1);
+    }
+    .snell-readout strong { color: var(--ink); font-weight: 700; }
+    .snell-readout .total {
+      color: var(--marker);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    /* Mirror static diagrams */
+    .mirror-grid {
+      display: grid;
+      gap: var(--space-5);
+      margin-top: var(--space-5);
+    }
+    .mirror-case {
+      padding: var(--space-4);
+      background: var(--paper);
+      border-radius: var(--radius);
+      border: 1px solid var(--ink-faint);
+    }
+    .mirror-case h4 {
+      font-family: var(--font-mono);
+      font-size: var(--fs-2xs);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-soft);
+      font-weight: 600;
+      margin: 0 0 var(--space-3) 0;
+    }
+    .mirror-case svg {
+      width: 100%; height: auto;
+      max-width: 480px;
+      margin: 0 auto;
+      display: block;
+    }
+    .mirror-case .case-result {
+      margin-top: var(--space-3);
+      font-size: var(--fs-xs);
+      color: var(--ink-soft);
+      font-family: var(--font-mono);
+    }
+    .mirror-case .case-result strong { color: var(--ink); font-weight: 700; }
+
+    /* Comparison table for duté zrcadlo cases */
+    .case-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-5) 0;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+    }
+    .case-table th, .case-table td {
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      border-bottom: 1px solid var(--ink-faint);
+    }
+    .case-table th {
+      font-weight: 700;
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      border-bottom: 2px solid var(--ink);
+    }
+    .case-table tr:last-child td { border-bottom: 2px solid var(--ink); }
+
+    /* Inline table for refractive indices */
+    .n-table {
+      width: 100%;
+      max-width: 420px;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      margin: var(--space-4) 0;
+    }
+    .n-table th, .n-table td {
+      padding: var(--space-2) var(--space-3);
+      text-align: left;
+      border-bottom: 1px solid var(--ink-faint);
+    }
+    .n-table th {
+      font-weight: 700;
+      font-size: var(--fs-3xs);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      border-bottom: 2px solid var(--ink);
+    }
+    .n-table td:last-child { color: var(--ink); font-weight: 500; text-align: right; }
+  </style>
+</head>
+<body>
+
+  <article class="lesson">
+
+    <header class="lesson-header">
+      <p class="eyebrow">
+        <span class="dot"></span>
+        <a href="../../../">Sešity</a> · <a href="../">Fyzika</a> · Optika
+      </p>
+      <h1>Světlo, lom a&nbsp;zrcadla</h1>
+      <p class="lead">
+        Co <span class="hl">vlastně</span> je světlo, proč se v&nbsp;jiném prostředí
+        láme a&nbsp;jak vzniká obraz v&nbsp;zrcadle. Tři navazující věci,
+        které spolu drží líp, než se zdá.
+      </p>
+      <dl class="meta">
+        <div><dt>Úroveň</dt><dd>9. třída / SŠ</dd></div>
+        <div><dt>Délka</dt><dd>35&nbsp;min</dd></div>
+        <div><dt>Předpoklady</dt><dd>vlnění, sin / cos</dd></div>
+      </dl>
+    </header>
+
+    <!-- ====================================================== -->
+    <!-- 01 — SVĚTLO                                            -->
+    <!-- ====================================================== -->
+    <section class="block" id="svetlo">
+      <h2 class="block-h">
+        <span class="block-n">01</span>
+        Co je vlastně světlo
+      </h2>
+
+      <p>
+        Světlo je <span class="hl">elektromagnetické vlnění</span>. Z&nbsp;hlediska
+        fyziky se nijak zásadně neliší od&nbsp;rádiových vln, mikrovln nebo rentgenového
+        záření — všechno jsou to vlny, jen mají různě dlouhou vlnovou délku λ
+        a&nbsp;tomu odpovídající frekvenci&nbsp;f.
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ c = \lambda \cdot f \]</div>
+        <figcaption class="formula-legend">
+          <span><code>c</code> — rychlost světla ve&nbsp;vakuu, <code>3 · 10⁸ m/s</code></span>
+          <span><code>λ</code> — vlnová délka</span>
+          <span><code>f</code> — frekvence</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        To, co naše oko vnímá jako <em>barvu</em>, je vlastně frekvence (nebo
+        ekvivalentně vlnová délka) dopadajícího světla. Modrá leží okolo
+        450&nbsp;nm, červená kolem 650&nbsp;nm. Mezi tím je celé viditelné spektrum
+        — všechno, co se vejde do&nbsp;úzkého pásma zhruba <span class="hl">400 až 700&nbsp;nm</span>.
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Interaktivní · 01 · Spektrum</p>
+        <div class="widget-stage" id="spektrum-stage"></div>
+        <figcaption class="widget-hint">Posuň vlnovou délku a&nbsp;sleduj, kde končí to, co vidíme.</figcaption>
+      </figure>
+
+      <p>
+        Kratší vlnové délky než&nbsp;~400&nbsp;nm patří k&nbsp;<strong>ultrafialovému</strong>
+        (UV) záření — to, které opaluje a&nbsp;ve&nbsp;větších dávkách škodí
+        kůži. Delší než&nbsp;~700&nbsp;nm jsou <strong>infračervené</strong> (IR),
+        tedy „tepelné" — cítíš je, ale nevidíš. Ještě dál pak leží mikrovlny
+        a&nbsp;rádio, opačným směrem rentgen a&nbsp;gama.
+      </p>
+
+      <aside class="callout callout--tip">
+        <p class="callout-tag">Tip</p>
+        <p>
+          Hmyz (třeba včely) vidí část UV — proto kvete spousta květin
+          „neviditelnými" UV vzory, které lákají opylovače. Někteří hadi
+          naopak „vidí" IR a&nbsp;loví podle tělesného tepla kořisti.
+        </p>
+      </aside>
+
+      <div class="example">
+        <p class="example-n">Příklad 01</p>
+        <p class="example-q">
+          Vlnová délka červeného laseru je 650&nbsp;nm. Jaká je jeho frekvence
+          ve&nbsp;vakuu?
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>Použijeme vztah \(c = \lambda \cdot f\), z&nbsp;něj vyjádříme frekvenci:</p>
+            <p>\[ f = \frac{c}{\lambda} = \frac{3 \cdot 10^8 \,\text{m/s}}{650 \cdot 10^{-9} \,\text{m}} \approx 4{,}6 \cdot 10^{14} \,\text{Hz} \]</p>
+            <p>
+              Frekvence viditelného světla je řádu <strong>stovky terahertzů</strong>
+              (1&nbsp;THz = 10¹²&nbsp;Hz). Červené světlo má frekvenci kolem 460&nbsp;THz,
+              modré kolem 650&nbsp;THz — všimni si, že kratší vlnová délka znamená
+              vyšší frekvenci.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 02 — LOM                                               -->
+    <!-- ====================================================== -->
+    <section class="block" id="lom">
+      <h2 class="block-h">
+        <span class="block-n">02</span>
+        Lom na&nbsp;rozhraní dvou prostředí
+      </h2>
+
+      <p>
+        Ve&nbsp;vakuu se světlo šíří rychlostí <em>c</em>. Ve&nbsp;všech ostatních
+        prostředích — vzduchu, vodě, skle, diamantu — se zpomaluje. Tomu, kolikrát
+        je v&nbsp;daném prostředí pomalejší, říkáme <span class="hl">index lomu</span>.
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ n = \frac{c}{v} \]</div>
+        <figcaption class="formula-legend">
+          <span><code>n</code> — index lomu (bezrozměrný, vždy ≥&nbsp;1)</span>
+          <span><code>v</code> — rychlost světla v&nbsp;daném prostředí</span>
+        </figcaption>
+      </figure>
+
+      <table class="n-table">
+        <thead>
+          <tr><th>Prostředí</th><th>Index lomu n</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Vakuum</td><td>1,000</td></tr>
+          <tr><td>Vzduch</td><td>1,000</td></tr>
+          <tr><td>Voda</td><td>1,33</td></tr>
+          <tr><td>Sklo (běžné)</td><td>~1,5</td></tr>
+          <tr><td>Diamant</td><td>2,42</td></tr>
+        </tbody>
+      </table>
+
+      <p>
+        Když světlo přechází z&nbsp;jednoho prostředí do&nbsp;druhého, mění
+        rychlost — a&nbsp;jelikož vlnu nelze „zlomit přesně v&nbsp;kolmém směru",
+        změní zároveň svůj směr. To je <strong>lom světla</strong>. Přesně ho
+        popisuje Snellův zákon:
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ n_1 \sin\alpha_1 = n_2 \sin\alpha_2 \]</div>
+        <figcaption class="formula-legend">
+          <span><code>n₁, n₂</code> — indexy lomu obou prostředí</span>
+          <span><code>α₁, α₂</code> — úhly od&nbsp;kolmice k&nbsp;rozhraní</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        Přechází-li světlo z&nbsp;opticky řidšího prostředí do&nbsp;hustšího
+        (např. vzduch&nbsp;→&nbsp;voda), láme se <span class="hl">ke&nbsp;kolmici</span>.
+        V&nbsp;opačném směru (voda&nbsp;→&nbsp;vzduch) <span class="hl">od&nbsp;kolmice</span>.
+        Vyzkoušej si to sám:
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Interaktivní · 02 · Snellův zákon</p>
+        <div class="widget-stage" id="snell-stage"></div>
+        <figcaption class="widget-hint">
+          Posuň úhel dopadu a&nbsp;sleduj, jak se mění úhel lomu.
+          Vyzkoušej průchod z&nbsp;vody do&nbsp;vzduchu — kdy paprsek úplně přestane procházet?
+        </figcaption>
+      </figure>
+
+      <aside class="callout callout--warn">
+        <p class="callout-tag">Pozor</p>
+        <p>
+          Úhly se ve&nbsp;Snellově zákoně měří vždy <strong>od&nbsp;kolmice</strong>
+          k&nbsp;rozhraní, ne od&nbsp;samotného rozhraní. Klasická chyba —
+          zaměníš-li to, vyjde ti naopak.
+        </p>
+      </aside>
+
+      <p>
+        Pokud světlo přechází z&nbsp;hustšího prostředí do&nbsp;řidšího (typicky
+        z&nbsp;vody do&nbsp;vzduchu) a&nbsp;úhel dopadu je dost velký, ze
+        Snellova zákona by vyšel sinus větší než&nbsp;jedna — což matematicky
+        nejde. V&nbsp;tom okamžiku se světlo úplně odrazí zpět do&nbsp;hustšího
+        prostředí. Říká se tomu <span class="hl">úplný odraz</span> a&nbsp;úhel,
+        při kterém začíná, je <strong>mezní úhel</strong>:
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ \sin\alpha_m = \frac{n_2}{n_1} \]</div>
+        <figcaption class="formula-legend">
+          <span>Platí jen pro <code>n₁ &gt; n₂</code> (z&nbsp;hustšího do&nbsp;řidšího)</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        Bez úplného odrazu by neexistovala optická vlákna, kterými teče internet.
+        Bez něj by nešel udělat ani diamantový brus, který drahokamy
+        rozsvítí — diamant má index lomu tak vysoký (2,42), že jeho mezní
+        úhel je pouhých ~24°, a&nbsp;světlo se uvnitř dlouho odráží od&nbsp;stěn,
+        než vyjde ven.
+      </p>
+
+      <div class="example">
+        <p class="example-n">Příklad 02</p>
+        <p class="example-q">
+          Paprsek dopadá ze&nbsp;vzduchu do&nbsp;vody pod úhlem 30°
+          od&nbsp;kolmice. Pod jakým úhlem se láme?
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>Snellův zákon, dosadíme \(n_1 = 1{,}00\), \(n_2 = 1{,}33\), \(\alpha_1 = 30°\):</p>
+            <p>\[ \sin\alpha_2 = \frac{n_1}{n_2} \sin\alpha_1 = \frac{1{,}00}{1{,}33} \cdot 0{,}5 \approx 0{,}376 \]</p>
+            <p>\[ \alpha_2 = \arcsin(0{,}376) \approx 22° \]</p>
+            <p>
+              Voda je opticky hustší → paprsek se ohnul <strong>ke&nbsp;kolmici</strong>
+              (z&nbsp;30° na&nbsp;22°). To je přesně to, kvůli čemu vidíš tužku
+              ve&nbsp;sklenici „zalomenou".
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <div class="example">
+        <p class="example-n">Příklad 03</p>
+        <p class="example-q">
+          Rychlost světla v&nbsp;určitém skle je 2&nbsp;·&nbsp;10⁸&nbsp;m/s.
+          Jaký má sklo index lomu?
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>\[ n = \frac{c}{v} = \frac{3 \cdot 10^8}{2 \cdot 10^8} = 1{,}5 \]</p>
+            <p>Klasické okenní sklo — odpovídá hodnotě z&nbsp;tabulky.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="example">
+        <p class="example-n">Příklad 04</p>
+        <p class="example-q">
+          Pod jakým úhlem musí svítit světlo zevnitř vody, aby ještě vyšlo
+          ven do&nbsp;vzduchu? (Hledáme mezní úhel.)
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>Vzorec pro mezní úhel, \(n_1 = 1{,}33\) (voda), \(n_2 = 1{,}00\) (vzduch):</p>
+            <p>\[ \sin\alpha_m = \frac{n_2}{n_1} = \frac{1{,}00}{1{,}33} \approx 0{,}752 \]</p>
+            <p>\[ \alpha_m = \arcsin(0{,}752) \approx 48{,}6° \]</p>
+            <p>
+              Pokud paprsek pod hladinou míří strměji než&nbsp;~48,6° od&nbsp;kolmice,
+              ven se nedostane — odrazí se zpět dolů. Proto, když plaveš pod vodou
+              a&nbsp;díváš se nahoru pod malým úhlem, vidíš místo oblohy zrcadlový
+              obraz dna.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 03 — ROVINNÉ ZRCADLO                                   -->
+    <!-- ====================================================== -->
+    <section class="block" id="rovinne">
+      <h2 class="block-h">
+        <span class="block-n">03</span>
+        Odraz a&nbsp;rovinné zrcadlo
+      </h2>
+
+      <p>
+        Když se světlo nedostane do&nbsp;druhého prostředí (typicky narazí
+        na&nbsp;lesklý povrch), <strong>odrazí se</strong>. A&nbsp;odraz má
+        pravidlo ještě jednodušší než&nbsp;lom:
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ \alpha = \alpha' \]</div>
+        <figcaption class="formula-legend">
+          <span>Úhel dopadu se rovná úhlu odrazu, oba měřené od&nbsp;kolmice.</span>
+          <span>Platí pro všechna zrcadla — rovinná i&nbsp;kulová.</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        U&nbsp;<strong>rovinného</strong> zrcadla je výsledek velmi přímočarý.
+        Obraz je vždy:
+      </p>
+
+      <ul>
+        <li><span class="hl">zdánlivý</span> — vzniká za&nbsp;zrcadlem, kde žádné světlo doopravdy není (paprsky jen vypadají, že odtud vychází);</li>
+        <li><span class="hl">stejně velký</span> jako předmět;</li>
+        <li><span class="hl">přímý</span> — nepřevrácený svisle;</li>
+        <li><span class="hl">stranově převrácený</span> — levá a&nbsp;pravá se prohodí;</li>
+        <li>vzdálený od&nbsp;zrcadla <span class="hl">stejně daleko za</span>, jako je předmět před.</li>
+      </ul>
+
+      <figure class="widget">
+        <p class="widget-tag">Statický nákres · Rovinné zrcadlo</p>
+        <div class="widget-stage">
+          <div class="mirror-case">
+            <h4>Geometrie zdánlivého obrazu</h4>
+            <svg viewBox="0 0 600 280" class="diagram" role="img" aria-label="Konstrukce zdánlivého obrazu v rovinném zrcadle">
+              <defs>
+                <marker id="arr-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink, #131A2A)"/>
+                </marker>
+                <marker id="arr-r-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux, #E85D3D)"/>
+                </marker>
+                <pattern id="hatch" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="var(--ink-faint, #8997AE)" stroke-width="1.5"/>
+                </pattern>
+              </defs>
+
+              <!-- mirror -->
+              <line x1="300" y1="20" x2="300" y2="260" stroke="var(--ink, #131A2A)" stroke-width="3"/>
+              <rect x="300" y="20" width="10" height="240" fill="url(#hatch)"/>
+              <text x="305" y="14" font-size="11" fill="var(--ink-soft, #3D4B66)">zrcadlo</text>
+
+              <!-- object arrow (left) -->
+              <line x1="140" y1="190" x2="140" y2="100" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-r)"/>
+              <text x="100" y="210" font-size="11" fill="var(--ink, #131A2A)" font-weight="600">předmět</text>
+
+              <!-- image arrow (right, dashed lighter) -->
+              <line x1="460" y1="190" x2="460" y2="100" stroke="var(--ink-soft, #3D4B66)" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-r)"/>
+              <text x="420" y="210" font-size="11" fill="var(--ink-soft, #3D4B66)">obraz (zdánlivý)</text>
+
+              <!-- rays from arrow tip to eye -->
+              <!-- ray 1: from object tip to mirror, reflected to eye -->
+              <line x1="140" y1="100" x2="280" y2="160" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" marker-end="url(#arr-r-aux)"/>
+              <line x1="280" y1="160" x2="200" y2="240" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.75" marker-end="url(#arr-r-aux)"/>
+              <!-- ray 1 extension behind mirror -->
+              <line x1="280" y1="160" x2="460" y2="100" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
+
+              <!-- eye -->
+              <circle cx="195" cy="245" r="9" fill="var(--paper, #F6F1E1)" stroke="var(--ink, #131A2A)" stroke-width="1.5"/>
+              <circle cx="195" cy="245" r="3" fill="var(--ink, #131A2A)"/>
+              <text x="210" y="252" font-size="11" fill="var(--ink-soft, #3D4B66)">oko</text>
+
+              <!-- distance markers -->
+              <line x1="140" y1="245" x2="296" y2="245" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <line x1="304" y1="245" x2="460" y2="245" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <line x1="140" y1="240" x2="140" y2="250" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <line x1="460" y1="240" x2="460" y2="250" stroke="var(--ink-faint, #8997AE)" stroke-width="0.8"/>
+              <text x="210" y="270" font-size="11" fill="var(--ink-soft, #3D4B66)" font-style="italic">a</text>
+              <text x="378" y="270" font-size="11" fill="var(--ink-soft, #3D4B66)" font-style="italic">a' (=&nbsp;a)</text>
+            </svg>
+            <p class="case-result">
+              <strong>Obraz</strong> je zdánlivý, stejně velký, přímý, stranově převrácený.
+              Leží stejně daleko za&nbsp;zrcadlem (a&#39;) jako předmět před&nbsp;ním (a).
+            </p>
+          </div>
+        </div>
+        <figcaption class="widget-hint">
+          Šedé čárkované prodloužení paprsku ukazuje, kde oko „vidí" obraz — žádné světlo
+          tam ale doopravdy není.
+        </figcaption>
+      </figure>
+
+      <aside class="callout callout--warn">
+        <p class="callout-tag">Pozor</p>
+        <p>
+          Rovinné zrcadlo otáčí <strong>stranově</strong> (levá ↔ pravá),
+          ne svisle. Když zvedneš pravou ruku, „dvojník" v&nbsp;zrcadle zvedne
+          ruku ze&nbsp;své pravé strany — z&nbsp;tvého pohledu levou. Hlava
+          ale zůstává nahoře. Jde o&nbsp;převrácení kolem osy <em>kolmé</em>
+          na&nbsp;zrcadlo.
+        </p>
+      </aside>
+
+      <div class="example">
+        <p class="example-n">Příklad 05</p>
+        <p class="example-q">
+          Jak vysoké musí být svisle umístěné zrcadlo na&nbsp;zdi, aby se
+          v&nbsp;něm člověk viděl celý — od&nbsp;hlavy po&nbsp;paty?
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>
+              Označme výšku člověka <em>h</em>, výšku očí <em>e</em>. Aby člověk
+              viděl vrch hlavy, musí na&nbsp;zrcadle existovat bod, kde se paprsek
+              z&nbsp;temene odrazí podle zákona odrazu rovnou do&nbsp;oka. Z&nbsp;geometrie
+              (úhel dopadu = úhel odrazu): tento bod leží <strong>v&nbsp;polovině</strong>
+              vzdálenosti mezi temenem a&nbsp;očima — tedy ve&nbsp;výšce \(e + (h-e)/2\).
+            </p>
+            <p>
+              Stejně pro paty: bod, ve&nbsp;kterém se paprsek z&nbsp;chodidel odrazí
+              do&nbsp;oka, leží v&nbsp;polovině mezi chodidly a&nbsp;očima, tedy ve&nbsp;výšce
+              \(e/2\).
+            </p>
+            <p>
+              Potřebné svislé pásmo zrcadla je tedy od&nbsp;výšky \(e/2\)
+              po&nbsp;výšku \(e + (h-e)/2 = (h+e)/2\). Jeho délka je:
+            </p>
+            <p>\[ \frac{h+e}{2} - \frac{e}{2} = \frac{h}{2} \]</p>
+            <p>
+              Stačí <strong>polovina tvojí výšky</strong> — a&nbsp;překvapivě
+              to nezávisí na&nbsp;tom, jak daleko od&nbsp;zrcadla stojíš.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- 04 — KULOVÁ ZRCADLA                                    -->
+    <!-- ====================================================== -->
+    <section class="block" id="kulova">
+      <h2 class="block-h">
+        <span class="block-n">04</span>
+        Kulová zrcadla — duté a&nbsp;vypuklé
+      </h2>
+
+      <p>
+        Když místo rovné plochy vezmeme <strong>kulový vrchlík</strong>, dostaneme
+        kulové zrcadlo. Podle toho, na&nbsp;které straně je odrazná plocha,
+        rozlišujeme:
+      </p>
+
+      <ul>
+        <li><strong>Duté</strong> (konkávní, spojné) — odráží paprsky tak, že se
+          po&nbsp;odrazu sbíhají. Má kladnou ohniskovou vzdálenost \(f &gt; 0\).</li>
+        <li><strong>Vypuklé</strong> (konvexní, rozptylné) — odráží paprsky
+          rozbíhavě. \(f &lt; 0\).</li>
+      </ul>
+
+      <p>
+        Pro obě platí stejná zobrazovací rovnice:
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ \frac{1}{a} + \frac{1}{a'} = \frac{2}{r} = \frac{1}{f} \]</div>
+        <figcaption class="formula-legend">
+          <span><code>a</code> — vzdálenost předmětu od&nbsp;zrcadla</span>
+          <span><code>a'</code> — vzdálenost obrazu</span>
+          <span><code>r</code> — poloměr křivosti</span>
+          <span><code>f = r/2</code> — ohnisková vzdálenost</span>
+        </figcaption>
+      </figure>
+
+      <p>
+        A&nbsp;velikost obrazu vůči předmětu popisuje příčné zvětšení:
+      </p>
+
+      <figure class="formula">
+        <div class="formula-eq">\[ Z = -\frac{a'}{a} \]</div>
+        <figcaption class="formula-legend">
+          <span>Záporné <code>Z</code> = převrácený obraz</span>
+          <span>|Z|&nbsp;&gt;&nbsp;1 = zvětšený, |Z|&nbsp;&lt;&nbsp;1 = zmenšený</span>
+        </figcaption>
+      </figure>
+
+      <h3>Duté zrcadlo</h3>
+
+      <p>
+        U&nbsp;dutého zrcadla závisí typ obrazu na&nbsp;tom, kde leží
+        předmět vůči ohnisku&nbsp;F a&nbsp;středu křivosti&nbsp;C. Obraz
+        konstruujeme pomocí tří význačných paprsků: rovnoběžný s&nbsp;osou
+        → přes&nbsp;F, paprsek přes&nbsp;F → rovnoběžně s&nbsp;osou, paprsek
+        přes&nbsp;C → po&nbsp;sobě zpět.
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Statický nákres · Duté zrcadlo</p>
+        <div class="widget-stage">
+          <div class="mirror-case">
+            <h4>Předmět za&nbsp;středem křivosti C</h4>
+            <svg viewBox="0 0 600 280" class="diagram" role="img" aria-label="Duté zrcadlo, předmět za středem křivosti">
+              <defs>
+                <marker id="arr-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink, #131A2A)"/>
+                </marker>
+                <marker id="arr-d-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux, #E85D3D)"/>
+                </marker>
+              </defs>
+
+              <!-- optical axis -->
+              <line x1="20" y1="140" x2="580" y2="140" stroke="var(--ink-faint, #8997AE)" stroke-width="1"/>
+
+              <!-- concave mirror arc (opens to the left) -->
+              <path d="M 520 50 Q 470 140, 520 230" fill="none" stroke="var(--ink, #131A2A)" stroke-width="3"/>
+
+              <!-- F and C markers -->
+              <circle cx="430" cy="140" r="4" fill="var(--ink, #131A2A)"/>
+              <text x="426" y="160" font-size="11" fill="var(--ink, #131A2A)" font-weight="700">F</text>
+              <circle cx="340" cy="140" r="4" fill="var(--ink, #131A2A)"/>
+              <text x="336" y="160" font-size="11" fill="var(--ink, #131A2A)" font-weight="700">C</text>
+
+              <!-- object arrow (left of C) -->
+              <line x1="180" y1="140" x2="180" y2="80" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-d)"/>
+              <text x="155" y="170" font-size="11" fill="var(--ink, #131A2A)">předmět</text>
+
+              <!-- ray 1: parallel → through F -->
+              <line x1="180" y1="80" x2="473" y2="80" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
+              <line x1="473" y1="80" x2="378" y2="172" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5" marker-end="url(#arr-d-aux)"/>
+
+              <!-- ray 2: through F → parallel -->
+              <line x1="180" y1="80" x2="473" y2="171" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
+              <line x1="473" y1="171" x2="220" y2="171" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5" marker-end="url(#arr-d-aux)"/>
+
+              <!-- ray 3: through C → back through C -->
+              <line x1="180" y1="80" x2="478" y2="183" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1" opacity="0.5"/>
+              <line x1="478" y1="183" x2="180" y2="80" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1" opacity="0.5"/>
+
+              <!-- image (small, inverted, between C and F) -->
+              <line x1="378" y1="140" x2="378" y2="172" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-d)"/>
+              <text x="384" y="190" font-size="11" fill="var(--ink, #131A2A)">obraz</text>
+            </svg>
+            <p class="case-result">
+              <strong>Skutečný, převrácený, zmenšený.</strong> Leží mezi C a&nbsp;F.
+            </p>
+          </div>
+        </div>
+        <figcaption class="widget-hint">
+          Plně interaktivní verze (přesun předmětu, přepínání typu zrcadla)
+          přijde v&nbsp;další iteraci. Zatím přehled všech případů v&nbsp;tabulce níže.
+        </figcaption>
+      </figure>
+
+      <table class="case-table">
+        <thead>
+          <tr>
+            <th>Poloha předmětu</th>
+            <th>Obraz</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>za&nbsp;C (a&nbsp;&gt;&nbsp;2f)</td>
+            <td>skutečný, převrácený, zmenšený</td>
+          </tr>
+          <tr>
+            <td>v&nbsp;C (a&nbsp;=&nbsp;2f)</td>
+            <td>skutečný, převrácený, stejně velký</td>
+          </tr>
+          <tr>
+            <td>mezi C a&nbsp;F</td>
+            <td>skutečný, převrácený, zvětšený</td>
+          </tr>
+          <tr>
+            <td>v&nbsp;F (a&nbsp;=&nbsp;f)</td>
+            <td>v&nbsp;nekonečnu (rovnoběžné paprsky)</td>
+          </tr>
+          <tr>
+            <td>mezi F a&nbsp;zrcadlem</td>
+            <td>zdánlivý, přímý, zvětšený (lupa)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Vypuklé zrcadlo</h3>
+
+      <p>
+        U&nbsp;vypuklého je situace jednodušší — <strong>ať dáš předmět kamkoli,
+        obraz je vždy stejný typ</strong>: zdánlivý, přímý, zmenšený. F&nbsp;a&nbsp;C
+        leží <em>za</em>&nbsp;zrcadlem, paprsky se po&nbsp;odrazu rozbíhají
+        a&nbsp;jejich prodloužení se protne za&nbsp;zrcadlem — tam vznikne obraz.
+      </p>
+
+      <figure class="widget">
+        <p class="widget-tag">Statický nákres · Vypuklé zrcadlo</p>
+        <div class="widget-stage">
+          <div class="mirror-case">
+            <h4>Předmět před vypuklým zrcadlem</h4>
+            <svg viewBox="0 0 600 280" class="diagram" role="img" aria-label="Vypuklé zrcadlo, vznik zdánlivého obrazu za zrcadlem">
+              <defs>
+                <marker id="arr-v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink, #131A2A)"/>
+                </marker>
+                <marker id="arr-v-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux, #E85D3D)"/>
+                </marker>
+              </defs>
+
+              <!-- optical axis -->
+              <line x1="20" y1="140" x2="580" y2="140" stroke="var(--ink-faint, #8997AE)" stroke-width="1"/>
+
+              <!-- convex mirror arc (opens to the right) -->
+              <path d="M 320 50 Q 370 140, 320 230" fill="none" stroke="var(--ink, #131A2A)" stroke-width="3"/>
+
+              <!-- F and C behind mirror (dashed) -->
+              <circle cx="420" cy="140" r="4" fill="none" stroke="var(--ink-soft, #3D4B66)" stroke-width="1.5" stroke-dasharray="2 2"/>
+              <text x="416" y="160" font-size="11" fill="var(--ink-soft, #3D4B66)" font-weight="700">F</text>
+              <circle cx="510" cy="140" r="4" fill="none" stroke="var(--ink-soft, #3D4B66)" stroke-width="1.5" stroke-dasharray="2 2"/>
+              <text x="506" y="160" font-size="11" fill="var(--ink-soft, #3D4B66)" font-weight="700">C</text>
+
+              <!-- object arrow -->
+              <line x1="140" y1="140" x2="140" y2="70" stroke="var(--ink, #131A2A)" stroke-width="2.5" marker-end="url(#arr-v)"/>
+              <text x="115" y="170" font-size="11" fill="var(--ink, #131A2A)">předmět</text>
+
+              <!-- ray 1: parallel → reflects as if from F (diverging upward) -->
+              <line x1="140" y1="70" x2="328" y2="70" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
+              <line x1="328" y1="70" x2="180" y2="195" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5" marker-end="url(#arr-v-aux)"/>
+              <!-- construction: ray 1 extension to F -->
+              <line x1="328" y1="70" x2="420" y2="140" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
+
+              <!-- ray 2: toward C → reflects back -->
+              <line x1="140" y1="70" x2="343" y2="115" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1.5"/>
+              <line x1="343" y1="115" x2="140" y2="70" stroke="var(--diagram-aux, #E85D3D)" stroke-width="1" opacity="0.4"/>
+              <!-- construction continued to C -->
+              <line x1="343" y1="115" x2="510" y2="140" stroke="var(--construction, #B6BFD0)" stroke-width="1" stroke-dasharray="4 4"/>
+
+              <!-- virtual image: small arrow behind mirror, dashed -->
+              <line x1="403" y1="140" x2="403" y2="120" stroke="var(--ink-soft, #3D4B66)" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-v)"/>
+              <text x="380" y="170" font-size="11" fill="var(--ink-soft, #3D4B66)">obraz (zdánlivý)</text>
+            </svg>
+            <p class="case-result">
+              <strong>Vždy zdánlivý, přímý, zmenšený</strong> — bez ohledu na&nbsp;polohu předmětu.
+            </p>
+          </div>
+        </div>
+      </figure>
+
+      <aside class="callout callout--remember">
+        <p class="callout-tag">Pamatuj</p>
+        <p>
+          Vypuklé zrcadlo dává <strong>vždy</strong> zmenšený zdánlivý obraz —
+          proto se používá tam, kde potřebuješ velký zorný úhel v&nbsp;malé ploše:
+          parkovací zrcátka u&nbsp;aut, dopravní zrcadla v&nbsp;zatáčkách, „rybí oko"
+          v&nbsp;obchodech.
+        </p>
+      </aside>
+
+      <div class="example">
+        <p class="example-n">Příklad 06</p>
+        <p class="example-q">
+          Předmět je ve&nbsp;vzdálenosti 30&nbsp;cm před dutým zrcadlem
+          s&nbsp;ohniskovou vzdáleností f&nbsp;=&nbsp;10&nbsp;cm. Kde vznikne
+          obraz a&nbsp;jaké má zvětšení?
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>Zobrazovací rovnice: \(\frac{1}{a} + \frac{1}{a'} = \frac{1}{f}\). Vyjádříme \(a'\):</p>
+            <p>\[ \frac{1}{a'} = \frac{1}{f} - \frac{1}{a} = \frac{1}{10} - \frac{1}{30} = \frac{3-1}{30} = \frac{2}{30} \]</p>
+            <p>\[ a' = 15 \,\text{cm} \]</p>
+            <p>Zvětšení:</p>
+            <p>\[ Z = -\frac{a'}{a} = -\frac{15}{30} = -0{,}5 \]</p>
+            <p>
+              Obraz vznikne <strong>15&nbsp;cm před zrcadlem</strong> (skutečný),
+              je <strong>zmenšený na&nbsp;polovinu</strong> a&nbsp;<strong>převrácený</strong>
+              (záporné Z). Předmět je za&nbsp;C (C&nbsp;=&nbsp;2f&nbsp;=&nbsp;20&nbsp;cm),
+              což sedí s&nbsp;tabulkou typů obrazu výše.
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <div class="example">
+        <p class="example-n">Příklad 07</p>
+        <p class="example-q">
+          Auto je 4&nbsp;m od&nbsp;parkovacího vypuklého zrcátka s&nbsp;ohniskovou
+          vzdáleností f&nbsp;=&nbsp;−0,5&nbsp;m. V&nbsp;jaké vzdálenosti za&nbsp;zrcátkem
+          vznikne obraz a&nbsp;jak velký bude oproti skutečnosti?
+        </p>
+        <details class="example-a">
+          <summary>Ukázat řešení</summary>
+          <div class="example-body">
+            <p>\[ \frac{1}{a'} = \frac{1}{f} - \frac{1}{a} = \frac{1}{-0{,}5} - \frac{1}{4} = -2 - 0{,}25 = -2{,}25 \]</p>
+            <p>\[ a' \approx -0{,}44 \,\text{m} \]</p>
+            <p>Záporné \(a'\) znamená <strong>obraz za&nbsp;zrcadlem</strong> — zdánlivý, asi 44&nbsp;cm za&nbsp;jeho povrchem.</p>
+            <p>Zvětšení:</p>
+            <p>\[ Z = -\frac{a'}{a} = -\frac{-0{,}44}{4} \approx 0{,}11 \]</p>
+            <p>
+              Obraz je <strong>asi 9×&nbsp;menší</strong> než skutečné auto. Přesně proto
+              vypuklé zrcátko dává řidiči široký výhled — do&nbsp;jeho malé plochy
+              se vejde velký kus dění za&nbsp;autem.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- KVÍZ                                                   -->
+    <!-- ====================================================== -->
+    <section class="block" id="kviz">
+      <h2 class="block-h">
+        <span class="block-n">★</span>
+        Vyzkoušej si to
+      </h2>
+
+      <div class="quiz" id="quiz"></div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- CO SI ODNÉST                                           -->
+    <!-- ====================================================== -->
+    <section class="takeaway">
+      <p class="takeaway-tag">Co si odnést</p>
+      <ol>
+        <li>Světlo je elektromagnetické vlnění — barva odpovídá frekvenci, viditelné je jen úzké pásmo zhruba 400–700&nbsp;nm.</li>
+        <li>V&nbsp;jiném prostředí se světlo zpomaluje. Index lomu <code>n&nbsp;=&nbsp;c/v</code> říká kolikrát.</li>
+        <li>Snellův zákon: <code>n₁&nbsp;sin&nbsp;α₁&nbsp;=&nbsp;n₂&nbsp;sin&nbsp;α₂</code>. Úhly měříme od&nbsp;kolmice.</li>
+        <li>Z&nbsp;hustšího do&nbsp;řidšího prostředí existuje mezní úhel — nad&nbsp;ním nastane úplný odraz.</li>
+        <li>Rovinné zrcadlo: obraz zdánlivý, stejně velký, stranově převrácený. Vypuklé: vždy zmenšený. Duté: záleží na&nbsp;poloze předmětu vůči F a&nbsp;C.</li>
+      </ol>
+    </section>
+
+  </article>
+
+  <!-- KaTeX render -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false
+    });
+  </script>
+
+  <!-- Widgets -->
+  <script type="module">
+    import { html, render, useState, useMemo } from '../../../lib/preact.js';
+
+    // ====== SPEKTRUM WIDGET ====================================
+
+    function wavelengthToRGB(wl) {
+      let R = 0, G = 0, B = 0;
+      if (wl >= 380 && wl < 440) { R = -(wl - 440) / 60; B = 1; }
+      else if (wl < 490) { G = (wl - 440) / 50; B = 1; }
+      else if (wl < 510) { G = 1; B = -(wl - 510) / 20; }
+      else if (wl < 580) { R = (wl - 510) / 70; G = 1; }
+      else if (wl < 645) { R = 1; G = -(wl - 645) / 65; }
+      else if (wl <= 780) { R = 1; }
+
+      let factor = 1;
+      if (wl < 420)      factor = 0.3 + 0.7 * (wl - 380) / 40;
+      else if (wl > 700) factor = 0.3 + 0.7 * (780 - wl) / 80;
+
+      const gamma = 0.8;
+      const ch = v => Math.max(0, Math.min(255, Math.round(255 * Math.pow(v * factor, gamma))));
+      return `rgb(${ch(R)}, ${ch(G)}, ${ch(B)})`;
+    }
+
+    function bandName(wl) {
+      if (wl < 380) return 'Hluboké UV';
+      if (wl < 400) return 'Ultrafialové (UV)';
+      if (wl < 450) return 'Fialová';
+      if (wl < 490) return 'Modrá';
+      if (wl < 510) return 'Tyrkysová';
+      if (wl < 565) return 'Zelená';
+      if (wl < 590) return 'Žlutá';
+      if (wl < 625) return 'Oranžová';
+      if (wl < 700) return 'Červená';
+      if (wl < 780) return 'Hluboce červená';
+      return 'Infračervené (IR)';
+    }
+
+    function Spektrum() {
+      const [wl, setWl] = useState(550);
+
+      const isVisible = wl >= 400 && wl <= 700;
+      const color = isVisible ? wavelengthToRGB(wl) : '#7a7a7a';
+      const freqTHz = (300_000 / wl).toFixed(0); // c = 3e8 m/s; f[THz] = c/λ = 3e8/(λ·1e-9)/1e12 = 3e5/λ
+      const markerPos = ((wl - 300) / (800 - 300)) * 100;
+
+      return html`
+        <div class="spektrum">
+          <div class="spektrum-strip">
+            <div class="spektrum-marker" style=${{ left: `${markerPos}%` }}></div>
+          </div>
+          <input
+            type="range"
+            min="300" max="800" step="5"
+            value=${wl}
+            onInput=${e => setWl(+e.target.value)}
+            aria-label="Vlnová délka v nanometrech"
+          />
+          <dl class="spektrum-readout">
+            <div>
+              <dt>Vlnová délka</dt>
+              <dd>${wl}&nbsp;nm</dd>
+            </div>
+            <div>
+              <dt>Frekvence</dt>
+              <dd>${freqTHz}&nbsp;THz</dd>
+            </div>
+            <div>
+              <dt>Barva</dt>
+              <dd><span class="swatch" style=${{ background: color }}></span></dd>
+            </div>
+          </dl>
+          <p class="spektrum-band">
+            ${isVisible
+              ? html`<strong>${bandName(wl)}</strong> · uvnitř viditelného spektra`
+              : html`<strong>${bandName(wl)}</strong> · mimo viditelné spektrum`}
+          </p>
+        </div>
+      `;
+    }
+
+    render(html`<${Spektrum} />`, document.getElementById('spektrum-stage'));
+
+    // ====== SNELL WIDGET =======================================
+
+    const MATERIALS = {
+      'Vzduch':  1.000,
+      'Voda':    1.330,
+      'Sklo':    1.500,
+      'Diamant': 2.420,
+    };
+
+    function Snell() {
+      const [angle, setAngle] = useState(30);
+      const [topMat, setTopMat] = useState('Vzduch');
+      const [bottomMat, setBottomMat] = useState('Voda');
+
+      const n1 = MATERIALS[topMat];
+      const n2 = MATERIALS[bottomMat];
+      const a1rad = angle * Math.PI / 180;
+      const sinB = (n1 / n2) * Math.sin(a1rad);
+      const totalReflection = sinB > 1;
+      const a2rad = totalReflection ? null : Math.asin(sinB);
+      const a2deg = totalReflection ? null : (a2rad * 180 / Math.PI);
+
+      // Critical angle, if applicable (only when n1 > n2)
+      const critical = n1 > n2 ? (Math.asin(n2 / n1) * 180 / Math.PI) : null;
+
+      // SVG geometry
+      const W = 400, H = 320;
+      const cx = W / 2, cy = H / 2;
+      const L = 130; // ray length
+
+      const sinA = Math.sin(a1rad);
+      const cosA = Math.cos(a1rad);
+      const incomingX = cx - L * sinA;
+      const incomingY = cy - L * cosA;
+      const reflectedX = cx + L * sinA;
+      const reflectedY = cy - L * cosA;
+      const refractedX = totalReflection ? null : cx + L * Math.sin(a2rad);
+      const refractedY = totalReflection ? null : cy + L * Math.cos(a2rad);
+
+      return html`
+        <div class="snell">
+          <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Lom paprsku na rozhraní">
+            <defs>
+              <marker id="arr-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink)"/>
+              </marker>
+              <marker id="arr-s-aux" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--diagram-aux)"/>
+              </marker>
+            </defs>
+
+            <!-- top medium -->
+            <rect x="0" y="0" width=${W} height=${cy} fill="#EBF2F8" opacity="0.55"/>
+            <!-- bottom medium -->
+            <rect x="0" y=${cy} width=${W} height=${cy} fill="#C6D4E0" opacity="0.55"/>
+
+            <!-- interface line -->
+            <line x1="0" y1=${cy} x2=${W} y2=${cy} stroke="var(--ink)" stroke-width="2"/>
+
+            <!-- normal (kolmice) -->
+            <line x1=${cx} y1="10" x2=${cx} y2=${H - 10} stroke="var(--ink-faint)" stroke-width="1" stroke-dasharray="4 4"/>
+            <text x=${cx + 6} y="18" font-size="10" fill="var(--ink-soft)">kolmice</text>
+
+            <!-- incoming ray -->
+            <line x1=${incomingX} y1=${incomingY} x2=${cx} y2=${cy} stroke="var(--ink)" stroke-width="2.25" marker-end="url(#arr-s)"/>
+
+            <!-- reflected ray -->
+            <line x1=${cx} y1=${cy} x2=${reflectedX} y2=${reflectedY} stroke="var(--ink)" stroke-width="${totalReflection ? '2.5' : '1.25'}" stroke-dasharray="${totalReflection ? '0' : '5 4'}" opacity="${totalReflection ? '1' : '0.5'}" marker-end="url(#arr-s)"/>
+
+            <!-- refracted ray (if exists) -->
+            ${!totalReflection && html`
+              <line x1=${cx} y1=${cy} x2=${refractedX} y2=${refractedY} stroke="var(--diagram-aux)" stroke-width="2.25" marker-end="url(#arr-s-aux)"/>
+            `}
+
+            <!-- labels -->
+            <text x="10" y="20" font-size="11" font-weight="700" fill="var(--ink)">${topMat} (n₁ = ${n1.toFixed(2)})</text>
+            <text x="10" y=${H - 10} font-size="11" font-weight="700" fill="var(--ink)">${bottomMat} (n₂ = ${n2.toFixed(2)})</text>
+
+            <!-- angle arc α₁ -->
+            <path d="M ${cx - 30} ${cy} A 30 30 0 0 1 ${cx - 30 * Math.cos(a1rad)} ${cy - 30 * Math.sin(a1rad)}" fill="none" stroke="var(--ink)" stroke-width="1"/>
+            <text x="${cx - 45}" y="${cy - 14}" font-size="11" fill="var(--ink)" font-weight="700">α₁</text>
+
+            <!-- angle arc α₂ -->
+            ${!totalReflection && html`
+              <path d="M ${cx + 30} ${cy} A 30 30 0 0 1 ${cx + 30 * Math.cos(a2rad)} ${cy + 30 * Math.sin(a2rad)}" fill="none" stroke="var(--diagram-aux)" stroke-width="1"/>
+              <text x="${cx + 36}" y="${cy + 20}" font-size="11" fill="var(--diagram-aux)" font-weight="700">α₂</text>
+            `}
+          </svg>
+
+          <div class="snell-controls">
+            <div class="snell-row">
+              <label>Úhel dopadu α₁: <strong>${angle}°</strong></label>
+              <input type="range" min="0" max="89" step="1" value=${angle} onInput=${e => setAngle(+e.target.value)}/>
+            </div>
+            <div class="snell-row">
+              <label>Horní prostředí (n₁)</label>
+              <select value=${topMat} onChange=${e => setTopMat(e.target.value)}>
+                ${Object.keys(MATERIALS).map(m => html`<option value=${m}>${m} · n = ${MATERIALS[m].toFixed(2)}</option>`)}
+              </select>
+            </div>
+            <div class="snell-row">
+              <label>Dolní prostředí (n₂)</label>
+              <select value=${bottomMat} onChange=${e => setBottomMat(e.target.value)}>
+                ${Object.keys(MATERIALS).map(m => html`<option value=${m}>${m} · n = ${MATERIALS[m].toFixed(2)}</option>`)}
+              </select>
+            </div>
+            <div class="snell-readout">
+              <div>n₁ sin α₁ = <strong>${(n1 * Math.sin(a1rad)).toFixed(3)}</strong></div>
+              ${totalReflection
+                ? html`<div class="total">Úplný odraz — paprsek neprochází.</div>`
+                : html`<div>α₂ = <strong>${a2deg.toFixed(1)}°</strong></div>`
+              }
+              ${critical !== null && html`
+                <div>Mezní úhel pro ${topMat}&nbsp;→&nbsp;${bottomMat}: <strong>${critical.toFixed(1)}°</strong></div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    render(html`<${Snell} />`, document.getElementById('snell-stage'));
+
+    // ====== QUIZ ===============================================
+
+    const QUESTIONS = [
+      {
+        q: 'Která barva má větší vlnovou délku?',
+        options: [
+          { label: 'Modrá',  correct: false },
+          { label: 'Červená', correct: true  },
+          { label: 'Mají stejnou',  correct: false },
+        ],
+      },
+      {
+        q: 'Při přechodu světla ze vzduchu do vody se paprsek láme…',
+        options: [
+          { label: 'ke kolmici',     correct: true  },
+          { label: 'od kolmice',     correct: false },
+          { label: 'vůbec se neláme', correct: false },
+        ],
+      },
+      {
+        q: 'Vypuklé zrcadlo dává obraz…',
+        options: [
+          { label: 'vždy zmenšený, zdánlivý, přímý',  correct: true  },
+          { label: 'vždy zvětšený, zdánlivý, přímý',  correct: false },
+          { label: 'stejně velký jako předmět',       correct: false },
+          { label: 'záleží na poloze předmětu',       correct: false },
+        ],
+      },
+      {
+        q: 'Úplný odraz nastane při přechodu z prostředí…',
+        options: [
+          { label: 'řidšího do hustšího',  correct: false },
+          { label: 'hustšího do řidšího',  correct: true  },
+          { label: 'libovolného do libovolného', correct: false },
+        ],
+      },
+    ];
+
+    function QuizQuestion({ index, q, options }) {
+      const [picked, setPicked] = useState(null);
+      return html`
+        <div class="quiz" style=${{ borderTop: 'none', paddingTop: 0 }}>
+          <p class="quiz-q"><span class="quiz-n">${index}</span> ${q}</p>
+          <ul class="quiz-options">
+            ${options.map((o, i) => {
+              let cls = '';
+              if (picked !== null) {
+                if (o.correct) cls = 'correct';
+                else if (picked === i) cls = 'wrong';
+              }
+              return html`
+                <li>
+                  <button
+                    class=${cls}
+                    disabled=${picked !== null}
+                    onClick=${() => setPicked(i)}
+                  >${o.label}</button>
+                </li>
+              `;
+            })}
+          </ul>
+        </div>
+      `;
+    }
+
+    function Quiz() {
+      return html`
+        <div style=${{ display: 'grid', gap: '32px' }}>
+          ${QUESTIONS.map((q, i) => html`<${QuizQuestion} index=${i + 1} q=${q.q} options=${q.options}/>`)}
+        </div>
+      `;
+    }
+
+    render(html`<${Quiz} />`, document.getElementById('quiz'));
+  </script>
+
+</body>
+</html>
