@@ -1205,6 +1205,59 @@
       </ol>
     </section>
 
+    <!-- ====================================================== -->
+    <!-- TAHÁK                                                  -->
+    <!-- ====================================================== -->
+    <aside class="cheatsheet">
+      <p class="cheatsheet-tag">Tahák</p>
+
+      <h4>Klíčové pojmy</h4>
+      <ul>
+        <li><strong>Internet</strong> = síť sítí (kabely, routery, IP). <strong>Web</strong> = jedna ze&nbsp;služeb (vedle e-mailu, videa, cloudu, …).</li>
+        <li><strong>IP adresa</strong>: <code>IPv4</code> 4 čísla 0–255 (~4,3&nbsp;mld) · <code>IPv6</code> 8 hex skupin (~10³⁸).</li>
+        <li><strong>DNS</strong>: překlad doména → IP (telefonní seznam internetu).</li>
+        <li><strong>Server</strong> poskytuje data · <strong>klient</strong> žádá · <strong>router</strong> směruje · <strong>paket</strong> = malý kousek dat.</li>
+        <li><strong>HTML</strong> kostra · <strong>CSS</strong> vzhled · <strong>JS</strong> chování.</li>
+        <li><strong>Statický web</strong> = stejný soubor všem · <strong>dynamický</strong> = složen z&nbsp;databáze při dotazu.</li>
+        <li><strong>Frontend</strong> (v&nbsp;prohlížeči) ↔ <strong>backend</strong> (na&nbsp;serveru) · <strong>API</strong> = jak spolu mluví (JSON).</li>
+      </ul>
+
+      <h4>Anatomie URL</h4>
+      <div class="cheatsheet-grid">
+        <div class="cheatsheet-item">
+          <div class="cs-formula">protokol://subdoména.<strong>doména.TLD</strong>/cesta?param#kotva</div>
+          <span class="cs-desc"><strong>Doména&nbsp;+&nbsp;TLD</strong> určují, komu web patří. Hledej je od&nbsp;konce, těsně před prvním lomítkem.</span>
+        </div>
+      </div>
+
+      <h4>Typy TLD</h4>
+      <ul>
+        <li><strong>Národní</strong>: <code>.cz</code>, <code>.sk</code>, <code>.de</code>, <code>.fr</code> — stará, důvěryhodná.</li>
+        <li><strong>Generická</strong>: <code>.com</code>, <code>.org</code>, <code>.net</code> — dnes volná pro kohokoli.</li>
+        <li><strong>Nová</strong>: <code>.shop</code>, <code>.xyz</code>, <code>.top</code>, <code>.online</code> — levná, oblíbená u&nbsp;phisherů.</li>
+      </ul>
+
+      <h4>Cesta klikem ke stránce</h4>
+      <ol style="padding-left: var(--space-4); margin: 0; font-size: var(--fs-xs); color: var(--ink-soft); line-height: 1.6;">
+        <li>Napíšeš URL a&nbsp;stiskneš Enter.</li>
+        <li>Prohlížeč zeptá DNS na&nbsp;IP adresu domény.</li>
+        <li>Pošle <code>GET</code> požadavek na&nbsp;server (přes HTTPS).</li>
+        <li>Server vrátí HTML.</li>
+        <li>Prohlížeč si stáhne CSS, JS a&nbsp;obrázky.</li>
+        <li>Vykreslí stránku.</li>
+      </ol>
+
+      <h4>Bezpečnost — pravidla</h4>
+      <ul>
+        <li><strong>HTTPS</strong>: šifruje <em>přenos</em>. <strong>Neříká</strong>, kdo je na&nbsp;druhé straně.</li>
+        <li><strong>Silné heslo = dlouhé</strong>, ne „složité". 4&nbsp;náhodná slova &gt; <code>Aa1!</code>.</li>
+        <li><strong>Správce hesel</strong> + <strong>2FA</strong> = pokrývá 90&nbsp;% rizik.</li>
+        <li><strong>Phishing</strong> — vodítka: tlak na&nbsp;rychlost, divná URL (typo, homoglyf, podivný TLD), nečekaná příloha, citový apel.</li>
+        <li><strong>Cookies</strong>: funkční (přihlášení, košík) · analytické · sledovací (3rd-party, reklama).</li>
+        <li><strong>Digitální stopa</strong> = co po&nbsp;sobě necháváš. Smazaný post může existovat v&nbsp;cache nebo archivu.</li>
+      </ul>
+    </aside>
+
   </article>
 
   <script type="module">

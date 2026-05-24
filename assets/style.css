@@ -586,6 +586,89 @@ code, kbd, samp {
   font-weight: 600;
 }
 
+/* ---------- 12b. Tahák (cheat sheet) ---------------------- */
+/* Lives below .takeaway. Quieter than the dark takeaway box — light
+   background, fine border, small dense typography. Reference card, not
+   summary. */
+.cheatsheet {
+  margin-top: var(--space-5);
+  padding: var(--space-5);
+  background: var(--paper-dim);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: var(--radius);
+}
+.cheatsheet-tag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-4) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.cheatsheet-tag::before, .cheatsheet-tag::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--ink-faint);
+  opacity: 0.5;
+}
+.cheatsheet h4 {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: var(--space-5) 0 var(--space-3) 0;
+}
+.cheatsheet h4:first-of-type { margin-top: 0; }
+.cheatsheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-3) var(--space-4);
+  font-size: var(--fs-xs);
+}
+.cheatsheet-item {
+  display: grid;
+  gap: 3px;
+}
+.cheatsheet-item .cs-formula {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--paper);
+  padding: 4px 8px;
+  border-radius: 3px;
+  color: var(--ink);
+  align-self: start;
+}
+.cheatsheet-item .cs-formula .katex { font-size: 1em; }
+.cheatsheet-item .cs-desc {
+  color: var(--ink-soft);
+  line-height: 1.4;
+  font-size: var(--fs-xs);
+}
+.cheatsheet ul {
+  padding-left: var(--space-4);
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.cheatsheet ul li { padding: 1px 0; }
+.cheatsheet ul li strong { color: var(--ink); font-weight: 600; }
+.cheatsheet code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--paper);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--ink);
+}
+
 /* ---------- 13. Landing / subject cards ------------------- */
 
 .subjects {

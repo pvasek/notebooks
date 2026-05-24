@@ -127,6 +127,7 @@ These are universal rules — prep docs shouldn't repeat them. Subject-specific 
 - **Vzorce**: KaTeX. Vždy uvést všechny proměnné v krátkém popisu **pod** vzorcem.
 - **Úvod widgetu**: každý interaktivní prvek má jednu instruktážní větu nad sebou (např. *„Posuň úhel a sleduj, kdy paprsek přestane procházet."*).
 - **Závěr lekce**: krátké shrnutí *„Co si odnést"* ve 4–5 odrážkách.
+- **Tahák**: pod *„Co si odnést"* další blok *„Tahák"* — kompaktní přehled **všech vzorců** a **top pojmů** v lekci k rychlému opakování / nahlížení. Vizuálně **méně výrazný** než *„Co si odnést"* (světlé pozadí `--paper-dim`, drobné písmo, hutná mřížka). Sekce: *Vzorce* (grid s formulkou + krátkým popisem), *Klíčové pojmy* (odrážky), případně další jako *Postup* nebo *Konvence*. Žádný nový obsah — jen sběr klíčových věcí v jednom místě.
 - **Static-fallback pro složité widgety**: pokud by interaktivní nákres byl nepřiměřeně složitý na první iteraci, vyrob **inline SVG statický nákres** (typicky 2–3 reprezentativní případy s popisky) plus tlačítko *„Otevřít interaktivní verzi"*, které lazy-mountne plnou Preact komponentu na místo SVG. Lekce zůstává plnohodnotná i bez interaktivity.
 - **Jednotky a notace**: SI jednotky, desetinná čárka (česká konvence), exponenty přes `^` v KaTeX. Vektory v matematice/fyzice tučně nebo šipkou — drž se jedné konvence v rámci lekce.
 
