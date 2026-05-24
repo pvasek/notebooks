@@ -64,7 +64,7 @@ Tón: praktický, místy detektivní. Reálné české domény a&nbsp;reálné p
 
 ### Bezpečnost
 - **HTTPS** — šifruje **přenos** mezi prohlížečem a&nbsp;serverem. Zámeček v&nbsp;adresním řádku znamená *„nikdo cestou data nečte ani nemění"*, ne *„tomuhle webu můžeš věřit"*. Phisher si může pořídit HTTPS certifikát za&nbsp;pár minut zdarma.
-- **Silné heslo** — *dlouhé* je důležitější než *složité*. `Pavel123` × `kolo-žralok-oblak-tramvaj`. Délka výrazně překonává míchání znaků.
+- **Silné heslo** — *dlouhé* je důležitější než *složité*. `Honza123` × `kolo-žralok-oblak-tramvaj`. Délka výrazně překonává míchání znaků.
 - **Správce hesel** — jediná dobrá strategie. Sám si stovku unikátních hesel nezapamatuješ.
 - **2FA** (dvoufaktor) — heslo + druhý krok (aplikace jako Authy/Google Authenticator, hardwarový klíč, SMS — SMS je nejslabší, ale stále výrazně lepší než nic).
 - **Phishing** — falešná stránka nebo zpráva, která loudí přihlášení. Indikátory: tlak na rychlost („do&nbsp;24h jinak…"), divná URL (`seznam-login.cz` × `seznam.cz`), nečekané přílohy, citově laděné výzvy.
@@ -88,7 +88,7 @@ Tón: praktický, místy detektivní. Reálné české domény a&nbsp;reálné p
 4. **IPv4 vs&nbsp;IPv6.** Proč přechod, když IPv4 fungovalo? Spočítej v&nbsp;řádu, kolik adres je 2³² a&nbsp;kolik 2¹²⁸. Kolikrát víc?
 5. **Statický × dynamický.** Které z&nbsp;těchto webů jsou typicky statické a&nbsp;které dynamické? Wikipedie, blog se třemi články na vlastní doméně, e-shop, chatovací aplikace, GitHub Pages stránka třídy, online banking. Odůvodni.
 6. **HTTPS mýtus.** Stránka má v&nbsp;adresním řádku zámeček (HTTPS). Znamená to, že je důvěryhodná?
-7. **Síla hesla.** Seřaď od nejslabšího po nejsilnější: `kocka`, `K0cka!`, `Pavel1234`, `kolo-prochazka-zelena-louka`, `qWeRtY1!`. Krátce odůvodni.
+7. **Síla hesla.** Seřaď od nejslabšího po nejsilnější: `kocka`, `K0cka!`, `Honza1234`, `kolo-prochazka-zelena-louka`, `qWeRtY1!`. Krátce odůvodni.
 
 ## Interaktivní prvky
 
@@ -111,7 +111,7 @@ Lekce má **4 interaktivní widgety** + závěrečný kvíz. Klíčové jsou „
   2. K&nbsp;čemu slouží DNS? *šifruje provoz / převádí doménu na IP / urychluje načítání / blokuje phishing*
   3. V&nbsp;URL `https://maps.google.com/path?q=praha` je doména: *maps / google / google.com / maps.google.com*
   4. HTTPS zaručuje: *bezpečný obsah / šifrovaný přenos / pravdivost informací / ochranu před phishingem*
-  5. Které heslo je silnější: `Pavel123!` × `cesnek-mraky-rybnik-televize`?
+  5. Které heslo je silnější: `Honza123!` × `cesnek-mraky-rybnik-televize`?
   6. Pakety: *putují vždy stejnou cestou / jsou velké celé soubory / jsou malé kousky dat, které se na konci složí / existují jen při e-mailu*
 
 ## Časté chyby a nedorozumění
