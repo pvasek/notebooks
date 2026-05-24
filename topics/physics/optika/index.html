@@ -472,9 +472,9 @@
           <div class="example-body">
             <p>Vzorec pro mezní úhel, \(n_1 = 1{,}33\) (voda), \(n_2 = 1{,}00\) (vzduch):</p>
             <p>\[ \sin\alpha_m = \frac{n_2}{n_1} = \frac{1{,}00}{1{,}33} \approx 0{,}752 \]</p>
-            <p>\[ \alpha_m = \arcsin(0{,}752) \approx 48{,}6° \]</p>
+            <p>\[ \alpha_m = \arcsin(0{,}752) \approx 48{,}8° \]</p>
             <p>
-              Pokud paprsek pod hladinou míří strměji než&nbsp;~48,6° od&nbsp;kolmice,
+              Pokud paprsek pod hladinou míří strměji než&nbsp;~48,8° od&nbsp;kolmice,
               ven se nedostane — odrazí se zpět dolů. Proto, když plaveš pod vodou
               a&nbsp;díváš se nahoru pod malým úhlem, vidíš místo oblohy zrcadlový
               obraz dna.
@@ -1085,14 +1085,14 @@
             <text x="10" y="20" font-size="11" font-weight="700" fill="var(--ink)">${topMat} (n₁ = ${n1.toFixed(2)})</text>
             <text x="10" y=${H - 10} font-size="11" font-weight="700" fill="var(--ink)">${bottomMat} (n₂ = ${n2.toFixed(2)})</text>
 
-            <!-- angle arc α₁ -->
-            <path d="M ${cx - 30} ${cy} A 30 30 0 0 1 ${cx - 30 * Math.cos(a1rad)} ${cy - 30 * Math.sin(a1rad)}" fill="none" stroke="var(--ink)" stroke-width="1"/>
-            <text x="${cx - 45}" y="${cy - 14}" font-size="11" fill="var(--ink)" font-weight="700">α₁</text>
+            <!-- angle arc α₁ — měřeno OD KOLMICE (od svislé normály), ne od rozhraní -->
+            <path d="M ${cx} ${cy - 30} A 30 30 0 0 1 ${cx - 30 * Math.sin(a1rad)} ${cy - 30 * Math.cos(a1rad)}" fill="none" stroke="var(--ink)" stroke-width="1.2"/>
+            <text x=${cx - 42 * Math.sin(a1rad / 2)} y=${cy - 42 * Math.cos(a1rad / 2)} font-size="12" fill="var(--ink)" font-weight="700" text-anchor="middle" dominant-baseline="central">α₁</text>
 
-            <!-- angle arc α₂ -->
+            <!-- angle arc α₂ — měřeno OD KOLMICE pod rozhraním -->
             ${!totalReflection && html`
-              <path d="M ${cx + 30} ${cy} A 30 30 0 0 1 ${cx + 30 * Math.cos(a2rad)} ${cy + 30 * Math.sin(a2rad)}" fill="none" stroke="var(--diagram-aux)" stroke-width="1"/>
-              <text x="${cx + 36}" y="${cy + 20}" font-size="11" fill="var(--diagram-aux)" font-weight="700">α₂</text>
+              <path d="M ${cx} ${cy + 30} A 30 30 0 0 1 ${cx + 30 * Math.sin(a2rad)} ${cy + 30 * Math.cos(a2rad)}" fill="none" stroke="var(--diagram-aux)" stroke-width="1.2"/>
+              <text x=${cx + 42 * Math.sin(a2rad / 2)} y=${cy + 42 * Math.cos(a2rad / 2)} font-size="12" fill="var(--diagram-aux)" font-weight="700" text-anchor="middle" dominant-baseline="central">α₂</text>
             `}
           </svg>
 
